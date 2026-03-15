@@ -1,0 +1,110 @@
+<h2>Registracija</h2>
+
+
+<form (ngSubmit)="submit()" #registrationForm="ngForm">
+	<table>
+		<tr>
+			<td><label for="username">Korisničko ime:</label></td>
+			<td><input type="text" id="username" name="username" [(ngModel)]="user.username" required /></td>
+		</tr>
+		<tr>
+			<td><label for="email">Email:</label></td>
+			<td><input type="email" id="email" name="email" [(ngModel)]="user.email" required /></td>
+		</tr>
+		<tr>
+			<td><label for="password">Lozinka:</label></td>
+			<td><input type="password" id="password" name="password" [(ngModel)]="password" required (input)="onPasswordInput()"/></td>
+		</tr>
+		<tr>
+			<td></td>
+			<td>
+				<ul style="margin: 0.5em 0 0 0; padding-left: 1.2em; font-size: 0.95em;">
+					<li [style.color]="passwordValidations.length ? 'green' : 'red'">
+						8-12 karaktera
+					</li>
+					<li [style.color]="passwordValidations.upper ? 'green' : 'red'">
+						Bar jedno veliko slovo
+					</li>
+					<li [style.color]="passwordValidations.number ? 'green' : 'red'">
+						Bar jedan broj
+					</li>
+					<li [style.color]="passwordValidations.special ? 'green' : 'red'">
+						Bar jedan specijalan znak
+					</li>
+					<li [style.color]="passwordValidations.startsWithLetter ? 'green' : 'red'">
+						Počinje slovom
+					</li>
+				</ul>
+			</td>
+		</tr>
+		<tr>
+			<td><label for="password-confirm">Potvrdi lozinku:</label></td>
+			<td><input type="password" id="password-confirm" name="password-confirm" [(ngModel)]="passwordConfirm" required (input)="onPasswordConfirmInput()" /></td>
+		</tr>
+		<tr>
+			<td></td>
+			<td>
+				<ul style="margin: 0.5em 0 0 0; padding-left: 1.2em; font-size: 0.95em;">
+					<li [style.color]="passwordValidations.match ? 'green' : 'red'">
+						Lozinke se poklapaju
+					</li>
+				</ul>
+			</td>
+		</tr>
+		<tr>
+			<td><label for="firstName">Ime:</label></td>
+			<td><input type="text" id="firstName" name="firstName" [(ngModel)]="user.firstName" required /></td>
+		</tr>
+		<tr>
+			<td><label for="lastName">Prezime:</label></td>
+			<td><input type="text" id="lastName" name="lastName" [(ngModel)]="user.lastName" required /></td>
+		</tr>
+		<tr>
+			<td><label for="phone">Telefon:</label></td>
+			<td><input type="tel" id="phone" name="phone" [(ngModel)]="user.phoneNumber" required pattern="[0-9+\-() ]{6,}" /></td> <!-- Check for phone number formats -->
+		</tr>
+		
+		<tr>
+			<td>Tip:</td>
+			<td>
+				<label><input type="radio" name="userRole" [(ngModel)]="user.role" value="user" required /> Korisnik</label>
+				<label><input type="radio" name="userRole" [(ngModel)]="user.role" value="manager" required /> Menadžer</label>
+			</td>
+		</tr>
+
+		@if (user.role === "manager") {
+			<tr>
+				<td><label for="firmName">Naziv firme:</label></td>
+				<td><input type="text" id="firmName" name="firmName" [(ngModel)]="firm.name" required /></td>
+			</tr>
+			<tr>
+				<td><label for="firmAddress">Adresa firme:</label></td>
+				<td><input type="text" id="firmAddress" name="firmAddress" [(ngModel)]="firm.address" required /></td>
+			</tr>
+			<tr>
+				<td><label for="firmId">Matični broj:</label></td>
+				<td><input type="text" id="firmId" name="firmId" [(ngModel)]="firm.firmId" required pattern="^[0-9]{8}$" /></td>
+			</tr>
+			<tr>
+				<td><label for="taxId">PIB firme:</label></td>
+				<td><input type="text" id="taxId" name="taxId" [(ngModel)]="firm.taxId" required pattern="^[1-9][0-9]{8}$" /></td>
+			</tr>
+		}
+		<tr>
+			<td></td>
+			<td>
+				<button type="submit" [disabled]="!registrationForm.form.valid">Registruj se</button>
+			</td>
+		</tr>
+	</table>
+</form>
+
+@if (submitted) 
+{
+	<div>
+		<p>Forma za registraciju je poslata! (Nema poziva ka backendu)</p>
+		<p><strong>Korisničko ime:</strong> {{ user.username }}</p>
+		<p><strong>Email:</strong> {{ user.email }}</p>
+	</div>
+}
+
