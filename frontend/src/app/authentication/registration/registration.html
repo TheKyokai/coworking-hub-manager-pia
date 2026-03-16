@@ -99,12 +99,5 @@
 	</table>
 </form>
 
-@if (submitted) 
-{
-	<div>
-		<p>Forma za registraciju je poslata! (Nema poziva ka backendu)</p>
-		<p><strong>Korisničko ime:</strong> {{ user.username }}</p>
-		<p><strong>Email:</strong> {{ user.email }}</p>
-	</div>
-}
+<span style="color: red;">{{msg.message}}</span>
 

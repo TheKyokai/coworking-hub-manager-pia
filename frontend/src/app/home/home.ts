@@ -3,7 +3,7 @@ import { Registration } from "../authentication/registration/registration";
 
 @Component({
   selector: 'app-home',
-  imports: [Registration],
+  imports: [],
   templateUrl: './home.html',
   styleUrl: './home.css',
 })

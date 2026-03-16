@@ -1,0 +1,14 @@
+<nav>
+  <a routerLink="">Home</a>
+  |
+  @if (!loggedIn)
+  {
+    <a routerLink="login">Prijava</a>
+    |
+    <a routerLink="registration">Registracija</a>
+  }
+  @else 
+  {
+    <a (click)="logout()" style="text-decoration: underline; color: blue;">Odjava</a>
+  }
+</nav>

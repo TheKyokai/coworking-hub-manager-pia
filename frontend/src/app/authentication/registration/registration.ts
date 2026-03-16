@@ -1,7 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
+import { AuthService } from '../../services/auth-service/auth-service';
 import { FormsModule } from '@angular/forms';
 import User from '../../models/user';
 import Firm from '../../models/firm';
+import Message from '../../models/message';
 
 @Component({
   selector: 'app-registration',
@@ -11,13 +13,14 @@ import Firm from '../../models/firm';
 })
 
 export class Registration implements OnInit{
+    private authService = inject(AuthService);
   user = new User();
   password = '';
   passwordConfirm = '';
-  submitted = false;
 
-  
   firm = new Firm();
+
+  msg = new Message();
 
   // Password validation flags
   passwordValidations = {
@@ -41,7 +44,6 @@ export class Registration implements OnInit{
     this.user.role = "user"
   }
 
-
   onPasswordInput() 
   {
     const pwd = this.password;
@@ -58,8 +60,11 @@ export class Registration implements OnInit{
     this.passwordValidations.match = this.password.length > 0 && this.password === this.passwordConfirm;
   }
 
-  submit() 
-  {
-    this.submitted = true;
+  async submit() {
+    if (this.user.role === 'manager') {
+      this.msg = await this.authService.registerManager(this.user, this.firm, this.password);
+    } else {
+      this.msg = await this.authService.registerUser(this.user, this.password);
+    }
   }
 }

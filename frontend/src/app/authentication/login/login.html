@@ -1,1 +1,24 @@
-<p>login works!</p>
+<h2>Prijava</h2>
+
+<form (ngSubmit)="submit()" #adminLoginForm="ngForm">
+	<table>
+		<tr>
+			<td><label for="username">Korisničko ime:</label></td>
+			<td><input type="text" id="username" name="username" [(ngModel)]="username" required /></td>
+		</tr>
+		<tr>
+			<td><label for="password">Lozinka:</label></td>
+			<td><input type="password" id="password" name="password" [(ngModel)]="password" required /></td>
+		</tr>
+		<tr>
+			<td></td>
+			<td>
+				<button type="submit" [disabled]="!adminLoginForm.form.valid">Prijavi se</button>
+			</td>
+		</tr>
+	</table>
+</form>
+
+<br>
+<span style="color: red;">{{msg.message}}</span>
+

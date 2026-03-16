@@ -19,9 +19,5 @@
 	</table>
 </form>
 
-@if (submitted) {
-	<div>
-		<p>Prijava uspešna! (Nema poziva ka backendu)</p>
-		<p><strong>Korisničko ime:</strong> {{ username }}</p>
-	</div>
-}
+<br>
+<span style="color: red;">{{msg.message}}</span>

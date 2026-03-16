@@ -6,18 +6,22 @@ import { requireRoles } from '../middleware/role'
 const userRouter = express.Router()
 export default userRouter
 
-// Public test route
-userRouter.route('/')
-	.get(userController.test)
 
-// Login route (returns JWT)
 userRouter.route('/login')
 	.post(userController.login)
 
-// Protected route (requires JWT)
-userRouter.route('/protected')
+userRouter.route('/login-admin')
+	.post(userController.loginAdmin)
+
+userRouter.route('/regiter-user')
+	.post(userController.registerUser)
+
+userRouter.route('/register-manager')
+	.post(userController.registerManager)
+
+userRouter.route('/get')
 	.get(
 		authenticateJWT, 
-		requireRoles("user", "manager"), 
-		userController.protected
+		requireRoles("user", "manager", "admin"), 
+		userController.getUser
 	)
