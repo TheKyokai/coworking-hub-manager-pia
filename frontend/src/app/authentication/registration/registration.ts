@@ -24,7 +24,7 @@ export class Registration implements OnInit, OnDestroy{
   profilePicturePreview: string | null = null;
   img: HTMLImageElement | null = null;
 
-  // Password validation flags
+  // Password and username validation flags
   passwordValidations = {
     length: false,
     upper: false,
@@ -32,17 +32,25 @@ export class Registration implements OnInit, OnDestroy{
     special: false,
     startsWithLetter: false,
     match: false,
+    general: false
   };
+  usernameHasWhitespace = false;
 
   // Regex patterns
   private upperPattern = /[A-Z]/;
   private numberPattern = /[0-9]/;
   private specialPattern = /[^A-Za-z0-9]/;
   private startsWithLetterPattern = /^[A-Za-z]/;
+  private generalPattern = /^[a-zA-Z][^\s]{7,11}$/;
+  private whitespacePattern = /\s/;
 
   ngOnInit(): void 
   {
     this.user.role = "user"
+  }
+
+  onUsernameInput() {
+    this.usernameHasWhitespace = this.whitespacePattern.test(this.user.username || '');
   }
 
   onPasswordInput() 
@@ -54,6 +62,7 @@ export class Registration implements OnInit, OnDestroy{
     this.passwordValidations.special = this.specialPattern.test(pwd);
     this.passwordValidations.startsWithLetter = this.startsWithLetterPattern.test(pwd);
     this.passwordValidations.match = pwd.length > 0 && this.password === this.passwordConfirm;
+    this.passwordValidations.general = this.generalPattern.test(pwd);
   }
 
   onPasswordConfirmInput() 

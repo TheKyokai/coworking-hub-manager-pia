@@ -1,6 +1,6 @@
 <h2>Prijava</h2>
 
-<form (ngSubmit)="submit()" #adminLoginForm="ngForm">
+<form (ngSubmit)="submit()" #loginForm="ngForm">
 	<table>
 		<tr>
 			<td><label for="username">Korisničko ime:</label></td>
@@ -13,11 +13,14 @@
 		<tr>
 			<td></td>
 			<td>
-				<button type="submit" [disabled]="!adminLoginForm.form.valid">Prijavi se</button>
+				<button type="submit" [disabled]="!loginForm.form.valid">Prijavi se</button>
 			</td>
 		</tr>
 	</table>
 </form>
+<br>
+
+<a [routerLink]="['/forgotten-password']">Zaboravljena lozinka</a>
 
 <br>
 <span style="color: red;">{{msg.message}}</span>

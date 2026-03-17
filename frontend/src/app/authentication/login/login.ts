@@ -1,12 +1,12 @@
 import { Component, inject } from '@angular/core';
 import { AuthService } from '../../services/auth-service/auth-service';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import Message from '../../models/message';
 import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-login',
-  imports: [FormsModule],
+  imports: [FormsModule, RouterLink],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })

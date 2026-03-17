@@ -14,7 +14,6 @@ export default class User
     
     // Password reset data
     resetToken = ""
-    resetTokenExpiration = new Date()
 
     // User role and role data
     role = ""

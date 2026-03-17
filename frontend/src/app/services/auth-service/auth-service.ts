@@ -110,4 +110,50 @@ export class AuthService {
     }
   }
   
+  async requestPasswordReset(identifier: string)
+  {
+    try {
+
+      const response = await firstValueFrom( 
+        this.http.post<Message>(
+          `${this.backUrl}/user/request-password-reset`,
+          { identifier },
+          { observe: 'response' }
+        )
+      );
+
+      const msg = new Message();
+      msg.message = response.body?.message || 'Uspešna slanje zahteva.';
+      msg.token = response.body?.token || '';
+      return msg;
+    } catch (error: any) {
+      const msg = new Message();
+      msg.message = error?.error?.message || 'Slanje zahteva neuspešno.';
+      msg.token = '';
+      return msg;
+    }
+  }
+
+  async resetPassword(newPassword: string, token: string)
+  {
+    try {
+
+      const response = await firstValueFrom( 
+        this.http.post<Message>(
+          `${this.backUrl}/user/password-reset`,
+          { newPassword, token },
+          { observe: 'response' }
+        )
+      );
+
+      const msg = new Message();
+      msg.message = response.body?.message || 'Uspešna promena lozinke.';
+      return msg;
+    } catch (error: any) {
+      const msg = new Message();
+      msg.message = error?.error?.message || 'Neuspešna promena lozinke.';
+      return msg;
+    }
+  }
+
 }

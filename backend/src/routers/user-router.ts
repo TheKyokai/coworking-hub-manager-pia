@@ -26,6 +26,17 @@ userRouter.route('/register-manager')
 		userController.registerManager
 	)
 
+userRouter.route('/request-password-reset')
+	.post(
+		userController.requestPasswordReset
+	)
+
+userRouter.route('/password-reset')
+	.post(
+		userController.resetPassword
+	)
+
+
 userRouter.route('/get')
 	.get(
 		authenticateJWT, 

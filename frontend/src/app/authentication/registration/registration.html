@@ -5,7 +5,7 @@
 	<table>
 		<tr>
 			<td><label for="username">Korisničko ime:</label></td>
-			<td><input type="text" id="username" name="username" [(ngModel)]="user.username" required /></td>
+			<td><input type="text" id="username" name="username" [(ngModel)]="user.username" required (input)="onUsernameInput()" /></td>
 		</tr>
 		<tr>
 			<td><label for="email">Email:</label></td>
@@ -105,11 +105,10 @@
 		<tr>
 			<td></td>
 			<td>
-				<button type="submit" [disabled]="!registrationForm.form.valid">Registruj se</button>
+				<button type="submit" [disabled]="!registrationForm.form.valid || password !== passwordConfirm || !passwordValidations.general || usernameHasWhitespace">Registruj se</button>
 			</td>
 		</tr>
 	</table>
 </form>
 
 <span style="color: red;">{{msg.message}}</span>
-

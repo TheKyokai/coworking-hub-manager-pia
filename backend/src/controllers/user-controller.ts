@@ -138,7 +138,7 @@ class UserController
             const passwordHash = await bcrypt.hash(password, 8);
             
             // Handle profile picture
-            let profilePicturePath = "images/profile/default.png"
+            let profilePicturePath = "images/profile/default profile.png"
 
             if (req.file) 
             {
@@ -222,7 +222,7 @@ class UserController
             const passwordHash = await bcrypt.hash(password, 8);
             
             // Handle profile picture
-            let profilePicturePath = "images/profile/default.png"
+            let profilePicturePath = "images/profile/default profile.png"
 
             if (req.file) 
             {
@@ -254,6 +254,86 @@ class UserController
             res.status(201).json({ message: 'Uspešna registracija. Moći ćete da se ulogujete kad bude i odobrena.' });
         } catch (err) {
             res.status(500).json({ message: 'Neuspešna registracija.' });
+        }
+    }
+
+    requestPasswordReset = async (req: express.Request, res: express.Response) => 
+    {
+        try {
+            const { identifier } = req.body;
+
+            if (!identifier) {
+                return res.status(400).json({ message: 'Identifikator je obavezan' });
+            }
+
+            
+            const userData = await user.findOne({
+                $or: [
+                    { username: identifier },
+                    { email: identifier }
+                ]
+            });
+
+            if (!userData) {
+                return res.status(400).json({ message: 'Korisnik sa ovim korisničkim imenom ili e-mejlom ne postoji' });
+            }
+
+            
+            const resetToken = jwt.sign({ username: userData.username }, JWT_KEY, { expiresIn: '30m' });
+
+            
+            userData.resetToken = resetToken;
+            await userData.save();
+
+            res.status(200).json({
+                message: 'Zahtev za resetovanje lozinke je poslat',
+                token: resetToken
+            });
+        } catch (err) {
+            res.status(500).json({ message: 'Greška pri slanju zahteva za resetovanje lozinke' });
+        }
+    }
+
+    resetPassword = async (req: express.Request, res: express.Response) => 
+    {
+        try {
+            const { newPassword, token } = req.body;
+
+            if (!newPassword || !token) {
+                return res.status(400).json({ message: 'Nova lozinka i token su obavezni' });
+            }
+
+            
+            let decoded: any;
+            try {
+                decoded = jwt.verify(token, JWT_KEY);
+            } catch (err) {
+                return res.status(400).json({ message: 'Token je nije validan ili je istekao' });
+            }
+
+            
+            const userData = await user.findOne({ username: decoded.username });
+
+            if (!userData) {
+                return res.status(400).json({ message: 'Korisnik nije pronađen' });
+            }
+
+            
+            if (!userData.resetToken || userData.resetToken !== token) {
+                return res.status(400).json({ message: 'Token je nevažeći. Molimo da ponovo zahtevate resetovanje lozinke' });
+            }
+
+            
+            const passwordHash = await bcrypt.hash(newPassword, 8);
+            userData.passwordHash = passwordHash;
+            userData.resetToken = null; 
+            await userData.save();
+
+            res.status(200).json({
+                message: 'Lozinka je uspešno resetovana'
+            });
+        } catch (err) {
+            res.status(500).json({ message: 'Greška pri resetovanju lozinke' });
         }
     }
 }

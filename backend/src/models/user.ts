@@ -10,7 +10,6 @@ const UserSchema = new mongoose.Schema({
     profilePicture: String,
     status: String, // pending/approved/rejected
     resetToken: String,
-    resetTokenExpiration: Date,
     role: String,
     firmId: String // Manager property
 })
