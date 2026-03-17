@@ -31,7 +31,7 @@ export class AdminLogin {
         if (response.ok)
         {
           localStorage.setItem("token", this.msg.token);
-          this.router.navigate(['profile']);
+          this.router.navigate(['admin-dashboard']);
         }
       },
       error => {

@@ -1,0 +1,65 @@
+@if (loading) {
+  <div class="loading">
+    <p>Učitavanje...</p>
+  </div>
+}
+
+@if (!loading) {
+  <div class="tab-content">
+    <h2>Zahtevi za registraciju na čekanju</h2>
+    
+    @if (pendingRegistrations.length === 0) {
+      <div class="empty-state">
+        <p>Nema zahteva za registraciju u ovom trenutku.</p>
+      </div>
+    }
+
+    @if (pendingRegistrations.length > 0) {
+      <div class="registrations-list">
+        <table class="requests-table">
+          <thead>
+            <tr>
+              <th>Slika</th>
+              <th>Korisničko ime</th>
+              <th>Puno ime</th>
+              <th>E-mail</th>
+              <th>Telefon</th>
+              <th>Uloga</th>
+              <th>Akcije</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (user of pendingRegistrations; track user.username) {
+              <tr class="request-row" (click)="showProfile(user)">
+                <td class="profile-pic">
+                  @if (user.profilePicture) {
+                    <img [src]="profilePictureSrc(user.profilePicture)" alt="Profil" class="thumbnail">
+                  } @else {
+                    <div class="thumbnail-placeholder">Nema slike</div>
+                  }
+                </td>
+                <td>{{ user.username }}</td>
+                <td>{{ user.firstName + " " + user.lastName }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.phoneNumber }}</td>
+                <td>{{ displayRole(user.role) }}</td>
+                <td class="actions">
+                  <button 
+                    (click)="approveUser(user)"
+                    class="btn btn-approve">
+                    Odobri
+                  </button>
+                  <button 
+                    (click)="declineUser(user)"
+                    class="btn btn-decline">
+                    Odbij
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+}

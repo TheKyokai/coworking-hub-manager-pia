@@ -6,6 +6,7 @@ import mongoose from 'mongoose'
 
 // Router imports
 import userRouter from './routers/user-router'
+import adminRouter from './routers/admin-router'
 
 
 // Initial base setup
@@ -21,8 +22,9 @@ connection.once('open', () => { console.log('Database connection established suc
 
 
 // Route setup
-app.use("/images", express.static(path.join(__dirname, "../images")));
+app.use('/images', express.static(path.join(__dirname, "../images")));
 app.use('/user', userRouter);
+app.use('/admin', adminRouter);
 
 
 // Default route just in case for testing 

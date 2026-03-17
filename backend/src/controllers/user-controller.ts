@@ -336,6 +336,110 @@ class UserController
             res.status(500).json({ message: 'Greška pri resetovanju lozinke' });
         }
     }
+
+    getPendingUsers = async (req: express.Request, res: express.Response) => 
+    {
+        try {
+            const pendingUsers = await user.find({ status: 'pending' });
+            res.status(200).json(pendingUsers);
+        } catch (err) {
+            res.status(500).json({ message: 'Error fetching pending users' });
+        }
+    }
+
+
+    getAllUsers = async (req: express.Request, res: express.Response) => 
+    {
+        try {
+            const allUsers = await user.find({ role: { $ne: 'admin' } });
+            res.status(200).json(allUsers);
+        } catch (err) {
+            res.status(500).json({ message: 'Error fetching all users' });
+        }
+    }
+
+    getByUsername = async (req: express.Request, res: express.Response) => 
+    {
+        const username = req.params.username;
+
+        const userData = await user.findOne({username: username})
+        if (userData == null)
+            res.status(401).json(null)
+        else
+            res.status(200).json(userData);
+    }
+
+    updateUser = async (req: express.Request, res: express.Response) =>
+    {
+        try {
+            const userJSON = req.body.userJSON;
+            const password = req.body.password;
+
+            if (!userJSON)
+                return res.status(400).json({ message: 'Podaci korisnika su obavezni' });
+
+            const userData = JSON.parse(userJSON);
+
+            if (!userData.username)
+                return res.status(400).json({ message: 'Korisničko ime je obavezno' });
+
+            const user_record = await user.findOne({ username: userData.username });
+
+            if (!user_record)
+                return res.status(404).json({ message: 'Korisnik nije pronađen' });
+
+            
+            if (userData.email && userData.email !== user_record.email)
+            {
+                const existingEmail = await user.findOne({ email: userData.email });
+                if (existingEmail)
+                    return res.status(400).json({ message: 'Već postoji nalog koji je registrovan sa ovom e-mejl adresom' });
+            }
+
+            user_record.firstName = userData.firstName;
+            user_record.lastName = userData.lastName;
+            user_record.email = userData.email;
+            user_record.phoneNumber = userData.phoneNumber;
+            
+            if (userData.role === 'manager' && userData.firmId)
+                user_record.firmId = userData.firmId;
+
+            
+            if (password)
+            {
+                const passwordHash = await bcrypt.hash(password, 8);
+                user_record.passwordHash = passwordHash;
+            }
+
+            
+            if (req.file)
+            {
+                if (user_record.profilePicture && user_record.profilePicture !== 'images/profile/default profile.png')
+                {
+                    const oldPath = path.join(process.cwd(), user_record.profilePicture);
+                    if (fs.existsSync(oldPath))
+                        fs.unlinkSync(oldPath);
+                }
+
+                
+                const ext = path.extname(req.file.originalname) || ".png";
+                const newFilename = `${userData.username}${ext}`;
+                const oldPath = req.file.path;
+                const newPath = path.join("images/profile", newFilename);
+
+                fs.renameSync(oldPath, newPath);
+                user_record.profilePicture = newPath;
+            }
+
+            await user_record.save();
+
+            res.status(200).json({ message: 'Korisnik je uspešno ažuriran' });
+        } catch (err) {
+            res.status(500).json({ message: 'Greška pri ažuriranju korisnika' });
+        }
+    }
+
+
 }
 
 const userController = new UserController()

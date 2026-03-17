@@ -36,10 +36,38 @@ userRouter.route('/password-reset')
 		userController.resetPassword
 	)
 
-
 userRouter.route('/get')
 	.get(
 		authenticateJWT, 
 		requireRoles("user", "manager", "admin"), 
 		userController.getUser
+	)
+
+userRouter.route('/pending-registrations')
+	.get(
+		authenticateJWT,
+		requireRoles("admin"), // Subject to change
+		userController.getPendingUsers
+	)
+
+userRouter.route('/all-users')
+	.get(
+		authenticateJWT,
+		requireRoles("admin"), // Subject to change
+		userController.getAllUsers
+	)
+
+userRouter.route('/get-by-username/:username')
+	.get(
+		authenticateJWT,
+		requireRoles("admin"),
+		userController.getByUsername
+	)
+
+userRouter.route('/update')
+	.post(
+		upload.single("profilePicture"),
+		authenticateJWT,
+		requireRoles("admin", "user", "manager"),
+		userController.updateUser
 	)

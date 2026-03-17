@@ -1,0 +1,150 @@
+@if (editingUser) {
+  <div class="profile-overlay">
+    <div class="profile-container">
+      <div class="profile-header">
+        <h2>Profil korisnika</h2>
+        <button class="close-btn" (click)="back()" [disabled]="loading">Nazad</button>
+      </div>
+
+      <div class="current-profile-picture">
+        <img [src]="profilePictureSrc" alt="Trenutna profilna slika" class="current-picture">
+      </div>
+
+      <div class="messages">
+        @if (successMessage) {
+          <div class="success-message">{{ successMessage }}</div>
+        }
+        @if (errorMessage) {
+          <div class="error-message">{{ errorMessage }}</div>
+        }
+      </div>
+
+      <form (ngSubmit)="saveChanges()" class="profile-form">
+        <div class="form-section">
+          <h3>Osnovne informacije</h3>
+          
+          <div class="form-group">
+            <label>Korisničko ime:</label>
+            <input type="text" [(ngModel)]="editingUser.username" name="username" disabled>
+          </div>
+
+          <div class="form-group">
+            <label>Ime:</label>
+            <input type="text" [(ngModel)]="editingUser.firstName" name="firstName" [disabled]="loading">
+          </div>
+
+          <div class="form-group">
+            <label>Prezime:</label>
+            <input type="text" [(ngModel)]="editingUser.lastName" name="lastName" [disabled]="loading">
+          </div>
+
+          <div class="form-group">
+            <label>E-mail:</label>
+            <input type="email" [(ngModel)]="editingUser.email" name="email" [disabled]="loading">
+          </div>
+
+          <div class="form-group">
+            <label>Telefon:</label>
+            <input type="tel" [(ngModel)]="editingUser.phoneNumber" name="phoneNumber" [disabled]="loading">
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h3>Detalji</h3>
+          
+          <div class="form-group">
+            <label>Tip:</label>
+            <input type="text" [value]="displayRole(editingUser.role)" disabled class="disabled-input">
+          </div>
+
+          <div class="form-group">
+            <label>Status:</label>
+            <input type="text" [value]="editingUser.status" disabled class="disabled-input">
+          </div>
+
+          @if (editingUser.role === 'manager' && editingUser.firmId) {
+            <div class="form-group">
+              <label>Matični broj firme:</label>
+              <input type="text" [(ngModel)]="editingUser.firmId" name="firmId" [disabled]="loading">
+            </div>
+          }
+
+          <div class="form-group">
+            <label for="profilePicture">Profilna slika:</label>
+            <input type="file" id="profilePicture" name="profilePicture" accept="image/*" (change)="onProfilePictureChange($event)" [disabled]="loading"/>
+          </div>
+
+          @if (profilePicturePreview) {
+            <div class="form-group">
+              <label>Pregled slike:</label>
+              <div class="profile-picture-preview-container">
+                <img [src]="profilePicturePreview" alt="Pregled profilne slike" class="profile-picture-preview">
+              </div>
+            </div>
+          }
+        </div>
+
+        <div class="form-section">
+          <h3>Promena lozinke</h3>
+
+          
+            <div class="form-group">
+                <label>Nova lozinka:</label>
+                <input type="password" [(ngModel)]="newPassword" name="newPassword" (input)="onPasswordInput()" [disabled]="loading">
+            </div>
+
+            <div class="password-validation">
+                <ul style="margin: 0.5em 0 0 0; padding-left: 1.2em; font-size: 0.95em;">
+                <li [style.color]="passwordValidations.length ? 'green' : 'red'">
+                    8-12 karaktera
+                </li>
+                <li [style.color]="passwordValidations.upper ? 'green' : 'red'">
+                    Bar jedno veliko slovo
+                </li>
+                <li [style.color]="passwordValidations.number ? 'green' : 'red'">
+                    Bar jedan broj
+                </li>
+                <li [style.color]="passwordValidations.special ? 'green' : 'red'">
+                    Bar jedan specijalan znak
+                </li>
+                <li [style.color]="passwordValidations.startsWithLetter ? 'green' : 'red'">
+                    Počinje slovom
+                </li>
+                </ul>
+            </div>
+
+            <div class="form-group">
+                <label>Potvrdi lozinku:</label>
+                <input type="password" [(ngModel)]="confirmPassword" name="confirmPassword" (input)="onPasswordConfirmInput()" [disabled]="loading">
+            </div>
+
+            <div class="password-validation">
+                <ul style="margin: 0.5em 0 0 0; padding-left: 1.2em; font-size: 0.95em;">
+                <li [style.color]="passwordValidations.match ? 'green' : 'red'">
+                    Lozinke se poklapaju
+                </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-save" [disabled]="loading || (showPasswordSection && (newPassword || confirmPassword) && !passwordValidations.general) || (showPasswordSection && (newPassword || confirmPassword) && !passwordValidations.match)">
+            @if (loading) {
+              Čuvanje...
+            } @else {
+              Sačuvaj promene
+            }
+          </button>
+          <button type="button" class="btn btn-delete" (click)="deleteUserProfile()" [disabled]="loading">
+            Obriši korisnika
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+@else
+{
+    <br>
+    <span>Loading...</span>
+}

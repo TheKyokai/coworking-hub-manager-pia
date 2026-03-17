@@ -1,0 +1,28 @@
+<div class="admin-dashboard">
+  <h1>Admin panel</h1>
+
+  
+  <div class="tab-navigation">
+    <button 
+      [class.active]="activeTab === 'pending'"
+      (click)="switchTab('pending')"
+      class="tab-button">
+      Zahtevi na čekanju
+    </button>
+    <button 
+      [class.active]="activeTab === 'users'"
+      (click)="switchTab('users')"
+      class="tab-button">
+      Svi korisnici
+    </button>
+  </div>
+
+  
+  @if (activeTab === 'pending') {
+    <app-admin-request-view></app-admin-request-view>
+  }
+
+  @if (activeTab === 'users') {
+    <app-admin-user-view></app-admin-user-view>
+  }
+</div>
