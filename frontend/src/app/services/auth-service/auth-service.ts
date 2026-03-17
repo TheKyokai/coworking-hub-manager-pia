@@ -48,15 +48,27 @@ export class AuthService {
     }
   }
 
-  async registerUser(user: User, password: string): Promise<Message> {
+  async registerUser(user: User, password: string, profilePictureFile?: File | null): Promise<Message> {
     try {
+
+      const formData = new FormData();
+
+      formData.append("userJSON", JSON.stringify(user));
+      formData.append("password", password);
+
+      if (profilePictureFile) {
+        formData.append("profilePicture", profilePictureFile);
+      }
+
       const response = await firstValueFrom(
         this.http.post<Message>(
-          `${this.backUrl}/user/regiter-user`,
-          { ...user, password },
+          `${this.backUrl}/user/register-user`,
+          formData,
           { observe: 'response' }
         )
       );
+
+
       const msg = new Message();
       msg.message = response.body?.message || 'Uspešna registracija.';
       return msg;
@@ -67,12 +79,23 @@ export class AuthService {
     }
   }
 
-  async registerManager(user: User, firm: Firm, password: string): Promise<Message> {
+  async registerManager(user: User, firm: Firm, password: string, profilePictureFile?: File | null): Promise<Message> {
     try {
+
+      const formData = new FormData();
+
+      formData.append("userJSON", JSON.stringify(user));
+      formData.append("password", password);
+      formData.append("firmJSON", JSON.stringify(firm));
+
+      if (profilePictureFile) {
+        formData.append("profilePicture", profilePictureFile);
+      }
+
       const response = await firstValueFrom(
         this.http.post<Message>(
           `${this.backUrl}/user/register-manager`,
-          { ...user, password, firm },
+          formData,
           { observe: 'response' }
         )
       );

@@ -90,6 +90,18 @@
 				<td><input type="text" id="taxId" name="taxId" [(ngModel)]="firm.taxId" required pattern="^[1-9][0-9]{8}$" /></td>
 			</tr>
 		}
+
+		<tr>
+			<td><label for="profilePicture">Profilna slika:</label></td>
+			<td><input type="file" id="profilePicture" name="profilePicture" accept="image/*" (change)="onProfilePictureChange($event)"/></td>
+		</tr>
+		@if (profilePicturePreview != null)
+		{
+			<tr>
+				<td></td>
+				<td><img [src]="profilePicturePreview"></td>
+			</tr>
+		}
 		<tr>
 			<td></td>
 			<td>

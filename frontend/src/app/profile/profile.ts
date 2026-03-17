@@ -12,20 +12,22 @@ import Message from '../models/message';
 })
 export class Profile implements OnInit{
 
-  private authService = inject(AuthService)
-  private router = inject(Router)
+  private authService = inject(AuthService);
+  private router = inject(Router);
 
-  user = new User()
-  msg = new Message()
+  user = new User();
+  profilePictureSource = "";
+  msg = new Message();
 
   async ngOnInit()
   {
-    const checkedUser = await this.authService.getUser()
+    const checkedUser = await this.authService.getUser();
     if (checkedUser == null)
     {
-      this.router.navigate([''])
-      return
+      this.router.navigate(['']);
+      return;
     }
-    this.user = checkedUser
+    this.user = checkedUser;
+    this.profilePictureSource = `http://localhost:4000/${this.user.profilePicture}`;
   }
 }

@@ -1,10 +1,13 @@
-import express from 'express'
+import express from 'express';
 
-import jwt from 'jsonwebtoken'
+import jwt from 'jsonwebtoken';
 import user from '../models/user';
 import bcrypt from 'bcryptjs';
+import firm from '../models/firm';
+import fs from 'fs';
+import path from 'path';
 
-const JWT_KEY = "key" // use env variable
+const JWT_KEY = "key"; // use env variable
 
 class UserController 
 {
@@ -116,28 +119,50 @@ class UserController
     registerUser = async (req: express.Request, res: express.Response) => 
     {
         try {
-            const { username, password, firstName, lastName, email, phoneNumber, role } = req.body;
-            if (role !== 'user') {
+            const { userJSON, password } = req.body;
+
+            const sentUser = JSON.parse(userJSON);
+
+            if (sentUser.role !== 'user') {
                 return res.status(400).json({ message: 'Unexpected and invalid role registration' });
             }
             // Check if user exists
-            const existingUser = await user.findOne({ username });
+            const existingUser = await user.findOne({ username: sentUser.username });
             if (existingUser) {
                 return res.status(400).json({ message: 'Korisnik sa ovim korisničkim imenom postoji' });
             }
-            const existingEmail = await user.findOne({ email });
+            const existingEmail = await user.findOne({ email: sentUser.email });
             if (existingEmail) {
                 return res.status(400).json({ message: 'Već postoji nalog koji je registrovan sa ovom e-mejl adresom' });
             }
             const passwordHash = await bcrypt.hash(password, 8);
+            
+            // Handle profile picture
+            let profilePicturePath = "images/profile/default.png"
+
+            if (req.file) 
+            {
+                const ext = path.extname(req.file.originalname) || ".png"
+
+                const newFilename = `${sentUser.username}${ext}`
+
+                const oldPath = req.file.path
+                const newPath = path.join("images/profile", newFilename)
+
+                fs.renameSync(oldPath, newPath)
+
+                profilePicturePath = newPath
+            }
+
             const newUser = new user({
-                username,
+                username: sentUser.username,
                 passwordHash,
-                firstName,
-                lastName,
-                email,
-                phoneNumber,
-                role,
+                firstName: sentUser.firstName,
+                lastName: sentUser.lastName,
+                email: sentUser.email,
+                phoneNumber: sentUser.phoneNumber,
+                role: sentUser.role,
+                profilePicture: profilePicturePath,
                 status: 'pending',
             });
             await newUser.save();
@@ -150,49 +175,79 @@ class UserController
     registerManager = async (req: express.Request, res: express.Response) => 
     {
         try {
-            const { username, password, firstName, lastName, email, phoneNumber, role, firm } = req.body;
-            if (role !== 'manager') {
+            const { userJSON, firmJSON, password } = req.body;
+
+            const sentUser = JSON.parse(userJSON);
+
+            if (sentUser.role !== 'manager') {
                 return res.status(400).json({ message: 'Unexpected and invalid role registration' });
             }
             // Check if user exists
-            const existingUser = await user.findOne({ username });
+            const existingUser = await user.findOne({ username: sentUser.username });
             if (existingUser) {
                 return res.status(400).json({ message: 'Korisnik sa ovim korisničkim imenom postoji' });
             }
-            const existingEmail = await user.findOne({ email });
+            const existingEmail = await user.findOne({ email: sentUser.email });
             if (existingEmail) {
                 return res.status(400).json({ message: 'Već postoji nalog koji je registrovan sa ovom e-mejl adresom' });
             }
             // Check if firm exists
-            const Firm = require('../models/firm').default;
-            let firmDoc = await Firm.findOne({ firmId: firm.firmId });
+            const sentFirm = JSON.parse(firmJSON);
+            let firmDoc = await firm.findOne({ firmId: sentFirm.firmId });
+            
             if (!firmDoc) {
-                firmDoc = new Firm({
-                    firmId: firm.firmId,
-                    taxId: firm.taxId,
-                    name: firm.name,
-                    address: firm.address,
-                    managers: [username],
+                firmDoc = new firm({
+                    firmId: sentFirm.firmId,
+                    taxId: sentFirm.taxId,
+                    name: sentFirm.name,
+                    address: sentFirm.address,
+                    managers: [sentUser.username],
                     status: 'pending',
                 });
                 await firmDoc.save();
             } else {
+                // Limit check
+                if (firmDoc.managers.length >= 2)
+                {
+                    res.status(500).json({ message: 'Neuspešna registracija. Firma već ima dva menadžera.' });
+                    return;
+                }
+                
                 // Add manager to existing firm
-                if (!firmDoc.managers.includes(username)) {
-                    firmDoc.managers.push(username);
+                if (!firmDoc.managers.includes(sentUser.username)) {
+                    firmDoc.managers.push(sentUser.username);
                     await firmDoc.save();
                 }
             }
             const passwordHash = await bcrypt.hash(password, 8);
+            
+            // Handle profile picture
+            let profilePicturePath = "images/profile/default.png"
+
+            if (req.file) 
+            {
+                const ext = path.extname(req.file.originalname) || ".png"
+
+                const newFilename = `${sentUser.username}${ext}`
+
+                const oldPath = req.file.path
+                const newPath = path.join("images/profile", newFilename)
+
+                fs.renameSync(oldPath, newPath)
+
+                profilePicturePath = newPath
+            }
+
             const newUser = new user({
-                username,
+                username: sentUser.username,
                 passwordHash,
-                firstName,
-                lastName,
-                email,
-                phoneNumber,
-                role,
-                firmId: firm.firmId,
+                firstName: sentUser.firstName,
+                lastName: sentUser.lastName,
+                email: sentUser.email,
+                phoneNumber: sentUser.phoneNumber,
+                role: sentUser.role,
+                firmId: sentFirm.firmId,
+                profilePicture: profilePicturePath,
                 status: 'pending',
             });
             await newUser.save();
@@ -201,10 +256,7 @@ class UserController
             res.status(500).json({ message: 'Neuspešna registracija.' });
         }
     }
-
-    // const hashedPassword = await bcrypt.hash(password, 8)
 }
 
 const userController = new UserController()
 export default userController
-

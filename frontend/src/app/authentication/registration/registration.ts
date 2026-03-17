@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { AuthService } from '../../services/auth-service/auth-service';
 import { FormsModule } from '@angular/forms';
 import User from '../../models/user';
@@ -12,15 +12,17 @@ import Message from '../../models/message';
   styleUrl: './registration.css',
 })
 
-export class Registration implements OnInit{
-    private authService = inject(AuthService);
+export class Registration implements OnInit, OnDestroy{
+  private authService = inject(AuthService);
   user = new User();
   password = '';
   passwordConfirm = '';
 
   firm = new Firm();
-
   msg = new Message();
+  profilePicture: File | null = null;
+  profilePicturePreview: string | null = null;
+  img: HTMLImageElement | null = null;
 
   // Password validation flags
   passwordValidations = {
@@ -37,7 +39,6 @@ export class Registration implements OnInit{
   private numberPattern = /[0-9]/;
   private specialPattern = /[^A-Za-z0-9]/;
   private startsWithLetterPattern = /^[A-Za-z]/;
-
 
   ngOnInit(): void 
   {
@@ -60,11 +61,47 @@ export class Registration implements OnInit{
     this.passwordValidations.match = this.password.length > 0 && this.password === this.passwordConfirm;
   }
 
+  onProfilePictureChange(event: any) {
+    const file = event.target.files[0];
+    if (this.img)
+      URL.revokeObjectURL(this.img.src);
+
+    // Image object to read dimensions
+    this.img = new Image();
+    const objectUrl = URL.createObjectURL(file);
+    this.img.src = objectUrl;
+
+    const imgRef = this.img;
+
+    this.img.onload = () => {
+      const width = imgRef.width;
+      const height = imgRef.height;
+
+      if (width < 100 || height < 100 || width > 300 || height > 300) {
+        this.msg.message = "Profilna slika mora biti između 100x100 i 300x300 piksela.";
+        this.profilePicture = null;
+        this.profilePicturePreview = null;
+        URL.revokeObjectURL(imgRef.src);
+      } else {
+        this.msg.message = "";
+        this.profilePicture = file;
+        this.profilePicturePreview = objectUrl;
+        console.log(objectUrl);
+      }
+    };
+  }
+
+  ngOnDestroy(): void 
+  {
+    if (this.img)
+      URL.revokeObjectURL(this.img.src);
+  }
+
   async submit() {
     if (this.user.role === 'manager') {
-      this.msg = await this.authService.registerManager(this.user, this.firm, this.password);
+      this.msg = await this.authService.registerManager(this.user, this.firm, this.password, this.profilePicture);
     } else {
-      this.msg = await this.authService.registerUser(this.user, this.password);
+      this.msg = await this.authService.registerUser(this.user, this.password, this.profilePicture);
     }
   }
 }
