@@ -18,11 +18,15 @@ export class Login {
   username = '';
   password = '';
   msg = new Message();
+  loading = false;
   
 
   submit() {
+    this.loading = true;
+    this.msg.message = '';
     this.authService.login(this.username, this.password).subscribe(
       response => {
+        this.loading = false;
         if (!response || !response.body) {
           this.msg.message = "Nepredvidjena greska";
           return;
@@ -31,10 +35,11 @@ export class Login {
         if (response.ok)
         {
           localStorage.setItem("token", this.msg.token);
-          this.router.navigate(['profile']);
+          this.router.navigate(['dashboard']);
         }
       },
       error => {
+        this.loading = false;
         this.msg.message = error?.error?.message || "Prijava neuspesna";
       }
     )

@@ -6,8 +6,15 @@ const WorkspaceSchema = new mongoose.Schema({
     name: String,
     pricePerHour: Number,
     capacity: Number,
+    city: String,
+    address: String,
+    maximumViolations: Number,
     status: String,
-    privateSpaces: Array
+    privateSpaces: Array,
+    description: String,
+    comments: Array,
+    ratings: Array,
+    pictures: Array
 })
 
 export default mongoose.model('Workspace', WorkspaceSchema, "workspaces")

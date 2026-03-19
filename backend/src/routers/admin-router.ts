@@ -30,3 +30,16 @@ adminRouter.route("/delete-user")
         adminController.deleteUser
     )
 
+adminRouter.route("/approve-workspace")
+    .post(
+        authenticateJWT,
+        requireRoles("admin"),
+        adminController.approveWorkspace
+    )
+
+adminRouter.route("/decline-workspace")
+    .post(
+        authenticateJWT,
+        requireRoles("admin"),
+        adminController.declineWorkspace
+    )

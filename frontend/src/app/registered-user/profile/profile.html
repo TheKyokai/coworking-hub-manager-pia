@@ -1,0 +1,171 @@
+@if (editingUser) {
+  <div class="view-panel-container">
+    <div class="view-panel-header">
+      <h2>Profil korisnika</h2>
+      @if (!isEditing) {
+        <button type="button" class="btn btn-edit" (click)="toggleEditMode()" [disabled]="loading">
+          Uredi profil
+        </button>
+      } @else {
+        <button type="button" class="btn btn-cancel" (click)="toggleEditMode()" [disabled]="loading">
+          Otkaži
+        </button>
+      }
+    </div>
+
+    <div class="view-panel-content">
+      <!-- View Mode -->
+      @if (!isEditing) {
+        <div class="profile-view">
+          <div class="profile-picture-section">
+            <img [src]="profilePictureSource" alt="Profilna slika" class="profile-picture">
+          </div>
+
+          <div class="profile-info">
+            <div class="info-row">
+              <label>Korisničko ime:</label>
+              <span>{{ user.username }}</span>
+            </div>
+            <div class="info-row">
+              <label>Ime:</label>
+              <span>{{ user.firstName }}</span>
+            </div>
+            <div class="info-row">
+              <label>Prezime:</label>
+              <span>{{ user.lastName }}</span>
+            </div>
+            <div class="info-row">
+              <label>Email:</label>
+              <span>{{ user.email }}</span>
+            </div>
+            <div class="info-row">
+              <label>Telefon:</label>
+              <span>{{ user.phoneNumber }}</span>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- Edit Mode -->
+      @if (isEditing) {
+        <div class="profile-edit">
+          <div class="messages">
+            @if (successMessage) {
+              <div class="success-message">{{ successMessage }}</div>
+            }
+            @if (errorMessage) {
+              <div class="error-message">{{ errorMessage }}</div>
+            }
+          </div>
+
+          <form (ngSubmit)="saveChanges()" class="profile-form">
+            <div class="form-section">
+              <h3>Osnovne informacije</h3>
+              
+              <div class="form-group">
+                <label>Korisničko ime:</label>
+                <input type="text" [(ngModel)]="editingUser.username" name="username" disabled>
+              </div>
+
+              <div class="form-group">
+                <label>Ime:</label>
+                <input type="text" [(ngModel)]="editingUser.firstName" name="firstName" [disabled]="loading">
+              </div>
+
+              <div class="form-group">
+                <label>Prezime:</label>
+                <input type="text" [(ngModel)]="editingUser.lastName" name="lastName" [disabled]="loading">
+              </div>
+
+              <div class="form-group">
+                <label>E-mail:</label>
+                <input type="email" [(ngModel)]="editingUser.email" name="email" [disabled]="loading">
+              </div>
+
+              <div class="form-group">
+                <label>Telefon:</label>
+                <input type="tel" [(ngModel)]="editingUser.phoneNumber" name="phoneNumber" [disabled]="loading">
+              </div>
+            </div>
+
+            <div class="form-section">
+              <h3>Profilna slika</h3>
+              
+              <div class="profile-picture-section">
+                <img [src]="profilePictureSource" alt="Trenutna profilna slika" class="profile-picture">
+              </div>
+
+              <div class="form-group">
+                <label for="profilePicture">Izaberite novu sliku:</label>
+                <input type="file" id="profilePicture" name="profilePicture" accept="image/*" (change)="onProfilePictureChange($event)" [disabled]="loading"/>
+              </div>
+
+              @if (profilePicturePreview) {
+                <div class="form-group">
+                  <label>Pregled slike:</label>
+                  <div class="profile-picture-section">
+                    <img [src]="profilePicturePreview" alt="Pregled profilne slike" class="profile-picture">
+                  </div>
+                </div>
+              }
+            </div>
+
+            <div class="form-section">
+              <h3>Promena lozinke</h3>
+
+              <div class="form-group">
+                <label>Nova lozinka:</label>
+                <input type="password" [(ngModel)]="newPassword" name="newPassword" (input)="onPasswordInput()" [disabled]="loading">
+              </div>
+
+              <ul class="validation-list">
+                <li [style.color]="passwordValidations.length ? 'green' : 'red'">
+                  {{ passwordValidations.length ? '✓' : '✗' }} 8-12 karaktera
+                </li>
+                <li [style.color]="passwordValidations.upper ? 'green' : 'red'">
+                  {{ passwordValidations.upper ? '✓' : '✗' }} Bar jedno veliko slovo
+                </li>
+                <li [style.color]="passwordValidations.number ? 'green' : 'red'">
+                  {{ passwordValidations.number ? '✓' : '✗' }} Bar jedan broj
+                </li>
+                <li [style.color]="passwordValidations.special ? 'green' : 'red'">
+                  {{ passwordValidations.special ? '✓' : '✗' }} Bar jedan specijalan znak
+                </li>
+                <li [style.color]="passwordValidations.startsWithLetter ? 'green' : 'red'">
+                  {{ passwordValidations.startsWithLetter ? '✓' : '✗' }} Počinje slovom
+                </li>
+              </ul>
+
+              <div class="form-group">
+                <label>Potvrdi lozinku:</label>
+                <input type="password" [(ngModel)]="confirmPassword" name="confirmPassword" (input)="onPasswordConfirmInput()" [disabled]="loading">
+              </div>
+
+              <ul class="validation-list">
+                <li [style.color]="passwordValidations.match ? 'green' : 'red'">
+                  {{ passwordValidations.match ? '✓' : '✗' }} Lozinke se poklapaju
+                </li>
+              </ul>
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" class="btn btn-save" [disabled]="loading || ((newPassword || confirmPassword) && !passwordValidations.general) || ((newPassword || confirmPassword) && !passwordValidations.match)">
+                @if (loading) {
+                  Čuvanje...
+                } @else {
+                  Sačuvaj promene
+                }
+              </button>
+              <button type="button" class="btn btn-cancel" (click)="toggleEditMode()" [disabled]="loading">
+                Otkaži
+              </button>
+            </div>
+          </form>
+        </div>
+      }
+    </div>
+  </div>
+} @else {
+  <br>
+  <span>Učitavanje...</span>
+}

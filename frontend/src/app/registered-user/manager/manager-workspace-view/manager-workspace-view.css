@@ -1,0 +1,98 @@
+/* Manager workspace view uses global reusable view-panel styles from styles.css */
+/* Global classes used: .view-panel-container, .view-panel-header, .view-panel-content */
+
+.empty-state {
+  padding: 40px 20px;
+  text-align: center;
+  color: #999;
+  background-color: white;
+  border-radius: 4px;
+  border: 1px solid #E8C1BC;
+}
+
+.workspaces-list {
+  margin-top: 20px;
+}
+
+.workspaces-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.workspaces-table thead {
+  background-color: #F7E8E6;
+  border-bottom: 2px solid #E8C1BC;
+}
+
+.workspaces-table th {
+  padding: 14px 16px;
+  text-align: left;
+  font-weight: 600;
+  color: #5C4240;
+  font-size: 14px;
+}
+
+.workspaces-table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid #E8C1BC;
+  font-size: 14px;
+  color: #5C4240;
+}
+
+.workspaces-table tbody tr:hover {
+  background-color: #faf8f7;
+}
+
+.workspaces-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Status Badges */
+.status {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.status-pending {
+  background: #fef3e0;
+  color: #7a5100;
+}
+
+.status-approved {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.status-rejected {
+  background: #fde8e6;
+  color: #8b3e37;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .workspaces-table {
+    font-size: 13px;
+  }
+
+  .workspaces-table th,
+  .workspaces-table td {
+    padding: 10px 8px;
+  }
+}
+
+.loading {
+  padding: 40px 20px;
+  text-align: center;
+  color: #999;
+  background-color: white;
+  border-radius: 4px;
+  border: 1px solid #E8C1BC;
+}

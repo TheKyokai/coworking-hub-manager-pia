@@ -9,7 +9,7 @@ export default class Reservation
 
     username = ""
 
-    status = "" // pending/approved/rejected
+    status = "" // realized / missed
     
     startDate = new Date()
     endDate = new Date()

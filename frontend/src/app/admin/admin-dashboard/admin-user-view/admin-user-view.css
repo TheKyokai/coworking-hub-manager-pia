@@ -1,79 +1,4 @@
-h2 {
-  font-size: 20px;
-  margin-bottom: 15px;
-  color: #555;
-}
-
-/* Tab Content */
-.tab-content {
-  animation: fadeIn 0.3s ease-in;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-/* Loading State */
-.loading {
-  text-align: center;
-  padding: 40px;
-  font-size: 16px;
-  color: #666;
-}
-
-/* Empty State */
-.empty-state {
-  text-align: center;
-  padding: 40px;
-  background: #f9f9f9;
-  border-radius: 4px;
-  color: #999;
-}
-
-/* Tables */
-.requests-table,
-.users-table {
-  width: 100%;
-  border-collapse: collapse;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  margin-top: 15px;
-}
-
-.requests-table thead,
-.users-table thead {
-  background: #f5f5f5;
-  border-bottom: 2px solid #ddd;
-}
-
-.requests-table th,
-.users-table th {
-  padding: 12px;
-  text-align: left;
-  font-weight: 600;
-  color: #333;
-}
-
-.request-row,
-.user-row {
-  border-bottom: 1px solid #eee;
-  transition: background-color 0.2s ease;
-}
-
-.request-row:hover,
-.user-row:hover {
-  background-color: #f9f9f9;
-}
-
-.requests-table td,
-.users-table td {
-  padding: 12px;
-  color: #666;
-}
+/* Component-specific styles kept below */
 
 /* Profile Picture Column */
 .profile-pic {
@@ -86,14 +11,14 @@ h2 {
   height: 50px;
   border-radius: 8px;
   object-fit: cover;
-  border: 2px solid #ddd;
+  border: 2px solid #E8C1BC;
 }
 
 .thumbnail-placeholder {
   width: 50px;
   height: 50px;
-  background: #f0f0f0;
-  border: 2px solid #ddd;
+  background: #F7E8E6;
+  border: 2px solid #E8C1BC;
   border-radius: 8px;
   display: flex;
   align-items: center;
@@ -102,6 +27,85 @@ h2 {
   color: #999;
   text-align: center;
   padding: 0;
+}
+
+/* Actions Column */
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* Buttons */
+.btn {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.btn-view {
+  background: #D97B77;
+  color: white;
+}
+
+.btn-view:hover {
+  background: #B85F5C;
+}
+
+.btn-delete {
+  background: #D97B77;
+  color: white;
+}
+
+.btn-delete:hover {
+  background: #B85F5C;
+}
+
+/* Status Badges */
+.status {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.status-approved {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.status-rejected {
+  background: #fde8e6;
+  color: #8b3e37;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .requests-table,
+  .users-table {
+    font-size: 13px;
+  }
+
+  .requests-table th,
+  .users-table th,
+  .requests-table td,
+  .users-table td {
+    padding: 8px;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
+
+  .btn {
+    width: 100%;
+  }
 }
 
 /* Actions Column */

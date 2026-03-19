@@ -1,0 +1,59 @@
+@if (loading) {
+  <div class="loading">
+    <p>Učitavanje...</p>
+  </div>
+}
+
+@if (!loading) {
+  <div class="view-panel-container">
+    <div class="view-panel-header">
+      <h2>Obrada zahteva za registraciju radnih prostora</h2>
+    </div>
+    
+    @if (pendingWorkspaces.length === 0) {
+      <div class="empty-state">
+        <p>Nema zahteva za registraciju radnih prostora u ovom trenutku.</p>
+      </div>
+    }
+
+    @if (pendingWorkspaces.length > 0) {
+      <div class="requests-list">
+        <table class="requests-table">
+          <thead>
+            <tr>
+              <th>Matični broj firme</th>
+              <th>Ime radnog prostora</th>
+              <th>Kapacitet</th>
+              <th>Cena po satu</th>
+              <th>Opis</th>
+              <th>Akcije</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (workspace of pendingWorkspaces; track workspace.firmId + workspace.name) {
+              <tr class="request-row">
+                <td>{{ workspace.firmId }}</td>
+                <td>{{ workspace.name }}</td>
+                <td>{{ workspace.capacity }}</td>
+                <td>{{ workspace.pricePerHour }}</td>
+                <td>{{ workspace.description || 'N/A' }}</td>
+                <td class="actions">
+                  <button 
+                    (click)="approveWorkspace(workspace)"
+                    class="btn btn-approve">
+                    Odobri
+                  </button>
+                  <button 
+                    (click)="declineWorkspace(workspace)"
+                    class="btn btn-decline">
+                    Odbij
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+}

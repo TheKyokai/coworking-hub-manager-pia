@@ -5,8 +5,11 @@
 }
 
 @if (!loading) {
-  <div class="tab-content">
-    <h2>Svi korisni profili</h2>
+  <div class="view-panel-container">
+    <div class="view-panel-header">
+      <h2>Upravljanje korisnicima</h2>
+    </div>
+    
     
     @if (allUsers.length === 0) {
       <div class="empty-state">
@@ -19,7 +22,7 @@
         <table class="users-table">
           <thead>
             <tr>
-              <th>Slika</th>
+              <th></th>
               <th>Korisničko ime</th>
               <th>Puno ime</th>
               <th>E-mail</th>

@@ -4,8 +4,9 @@ export default class Firm
     firmId = ""
     taxId = ""
     name = ""
+    city = ""
     address = ""
     managers: string[] = []
 
-    status = "" // pending/approved/rejected
+    status = "" // pending/approved
 }

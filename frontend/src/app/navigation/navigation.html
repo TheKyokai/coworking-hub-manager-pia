@@ -1,14 +1,23 @@
-<nav>
-  <a routerLink="">Home</a>
-  |
-  @if (!loggedIn)
-  {
-    <a routerLink="login">Prijava</a>
-    |
-    <a routerLink="registration">Registracija</a>
-  }
-  @else 
-  {
-    <a (click)="logout()" style="text-decoration: underline; color: blue;">Odjava</a>
-  }
-</nav>
+<header class="header">
+  <div class="header-content">
+    <div class="logo">
+      <a routerLink="" style="text-decoration: none;">
+        <h1>Coworking Hub Manager</h1>
+      </a>
+    </div>
+
+    <nav class="nav-links">
+      <a routerLink="" class="nav-link">Početna</a>
+
+      @if (!loggedIn) {
+        <a routerLink="login" class="nav-link nav-link-primary">Prijava</a>
+        <a routerLink="registration" class="nav-link nav-link-primary">Registracija</a>
+      } @else {
+        <div class="user-section">
+          <span class="user-name">{{ user?.firstName }} {{ user?.lastName }}</span>
+          <button type="button" class="btn-logout" (click)="logout()">Odjava</button>
+        </div>
+      }
+    </nav>
+  </div>
+</header>

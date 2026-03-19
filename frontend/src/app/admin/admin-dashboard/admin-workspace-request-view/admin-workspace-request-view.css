@@ -1,0 +1,111 @@
+.profile-pic {
+  text-align: center;
+  vertical-align: middle;
+}
+
+.thumbnail {
+  width: 50px;
+  height: 50px;
+  border-radius: 8px;
+  object-fit: cover;
+  border: 2px solid #E8C1BC;
+}
+
+.thumbnail-placeholder {
+  width: 50px;
+  height: 50px;
+  background: #F7E8E6;
+  border: 2px solid #E8C1BC;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  color: #999;
+  text-align: center;
+  padding: 0;
+}
+
+/* Actions Column */
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* Buttons */
+.btn {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.btn-approve {
+  background: #7cb342;
+  color: white;
+}
+
+.btn-approve:hover {
+  background: #689f38;
+}
+
+.btn-decline {
+  background: #D97B77;
+  color: white;
+}
+
+.btn-decline:hover {
+  background: #B85F5C;
+}
+
+/* Status Badges */
+.status {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.status-pending {
+  background: #fef3e0;
+  color: #7a5100;
+}
+
+.status-approved {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.status-rejected {
+  background: #fde8e6;
+  color: #8b3e37;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .requests-table,
+  .users-table {
+    font-size: 13px;
+  }
+
+  .requests-table th,
+  .users-table th,
+  .requests-table td,
+  .users-table td {
+    padding: 8px;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
+
+  .btn {
+    width: 100%;
+  }
+}

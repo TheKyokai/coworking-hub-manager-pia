@@ -6,7 +6,7 @@ const ReservationSchema = new mongoose.Schema({
     type: String, // open/private
     privateSpaceName: String, // in case of private
     username: String,
-    status: String, // pending/approved/rejected
+    status: String, // realized / missed
     startDate: Date,
     endDate: Date,
     reservationDate: Date

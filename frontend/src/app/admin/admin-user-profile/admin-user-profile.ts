@@ -20,6 +20,7 @@ export class AdminUserProfile implements OnInit, OnDestroy {
 
 
   editingUser: User | null = null;
+  isEditing = false;
   loading = false;
   successMessage = '';
   errorMessage = '';
@@ -57,14 +58,36 @@ export class AdminUserProfile implements OnInit, OnDestroy {
     this.profilePictureSrc = `http://localhost:4000/${this.editingUser!.profilePicture}?ts=${Date.now()}`;
   }
 
-  displayRole(role: string)
-  {
-    if (role === 'user')
-      return 'Član';
-    if (role === 'manager')
-      return 'Menadžer';
-    return role;
-  }
+    toggleEditMode()
+    {
+        this.isEditing = !this.isEditing;
+        if (!this.isEditing)
+        {
+            this.cancelEditing();
+        }
+    }
+
+    cancelEditing()
+    {
+        this.editingUser = { ...this.editingUser! };
+        this.profilePicture = null;
+        this.profilePicturePreview = null;
+        this.newPassword = '';
+        this.confirmPassword = '';
+        this.successMessage = '';
+        this.errorMessage = '';
+        this.resetPasswordValidations();
+        this.isEditing = false;
+    }
+
+    displayRole(role: string)
+    {
+        if (role === 'user')
+            return 'Član';
+        if (role === 'manager')
+            return 'Menadžer';
+        return role;
+    }
 
   onProfilePictureChange(event: any)
   {
@@ -125,6 +148,31 @@ export class AdminUserProfile implements OnInit, OnDestroy {
   {
     if (!this.editingUser)
       return;
+
+    // Validate required fields
+    if (!this.editingUser.firstName || !this.editingUser.firstName.trim())
+    {
+      this.errorMessage = "Ime je obavezno";
+      return;
+    }
+
+    if (!this.editingUser.lastName || !this.editingUser.lastName.trim())
+    {
+      this.errorMessage = "Prezime je obavezno";
+      return;
+    }
+
+    if (!this.editingUser.email || !this.editingUser.email.trim())
+    {
+      this.errorMessage = "Email je obavezan";
+      return;
+    }
+
+    if (!this.editingUser.phoneNumber || !this.editingUser.phoneNumber.trim())
+    {
+      this.errorMessage = "Telefon je obavezan";
+      return;
+    }
 
     if (this.newPassword || this.confirmPassword)
     {

@@ -20,6 +20,7 @@ export class ResetPassword implements OnInit{
   password = '';
   passwordConfirm = '';
   msg = new Message();
+  loading = false;
 
   // Password validation flags
   passwordValidations = {
@@ -59,12 +60,14 @@ export class ResetPassword implements OnInit{
   ngOnInit(): void 
   {
     this.token = this.route.snapshot.paramMap.get('token') || '';
-    this.msg.message = this.token;
   }
 
   async submit()
   {
+    this.loading = true;
+    this.msg.message = '';
     this.msg = await this.authService.resetPassword(this.password, this.token);
+    this.loading = false;
   }
 
 }

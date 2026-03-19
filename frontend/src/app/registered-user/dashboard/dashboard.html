@@ -1,0 +1,54 @@
+<div class="dashboard-container">
+  @if (isManager) 
+  {
+    <div class="dashboard-tabs">
+      <button 
+        class="tab-button" 
+        [class.active]="selectedTab === 'profile'"
+        (click)="selectTab('profile')">
+        Profil
+      </button>
+      <button 
+        class="tab-button" 
+        [class.active]="selectedTab === 'workspaces'"
+        (click)="selectTab('workspaces')">
+        Upravljanje radnim prostorima
+      </button>
+      <button 
+        class="tab-button" 
+        [class.active]="selectedTab === 'workspace-registration'"
+        (click)="selectTab('workspace-registration')">
+        Registracija radnog prostora
+      </button>
+      <button 
+        class="tab-button" 
+        [class.active]="selectedTab === 'reservations'"
+        (click)="selectTab('reservations')">
+        Upravljanje rezervacijama
+      </button>
+    </div>
+
+    <div class="dashboard-content">
+      @if (selectedTab === 'profile') 
+      {
+        <app-profile></app-profile>
+      }
+      @if (selectedTab === 'reservations') 
+      {
+        <app-manager-reservation-view></app-manager-reservation-view>
+      }
+      @if (selectedTab === 'workspaces') 
+      {
+        <app-manager-workspace-view></app-manager-workspace-view>
+      }
+      @if (selectedTab === 'workspace-registration') 
+      {
+        <app-manager-workspace-registration></app-manager-workspace-registration>
+      }
+    </div>
+  } 
+  @else 
+  {
+    <app-profile></app-profile>
+  }
+</div>

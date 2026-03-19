@@ -1,114 +1,271 @@
-<h2>Registracija</h2>
+<div class="view-panel-container">
+  <div class="view-panel-header">
+    <h2>Registracija</h2>
+  </div>
+  
+  <div class="view-panel-content registration-content">
+    <div class="registration-form-wrapper">
+      <div class="messages">
+        @if (msg.message) {
+          <div class="error-message">{{ msg.message }}</div>
+        }
+      </div>
 
+      <form (ngSubmit)="submit()" #registrationForm="ngForm" class="registration-form">
+        <div class="form-section">
+          <h3>Lični podaci</h3>
+          
+          <div class="form-group">
+            <label for="username">Korisničko ime: *</label>
+            <input 
+              type="text" 
+              id="username" 
+              name="username" 
+              [(ngModel)]="user.username" 
+              placeholder="Unesite korisničko ime"
+              (input)="onUsernameInput()"
+              [disabled]="loading"
+              required>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="firstName">Ime: *</label>
+              <input 
+                type="text" 
+                id="firstName" 
+                name="firstName" 
+                [(ngModel)]="user.firstName" 
+                placeholder="Unesite ime"
+                [disabled]="loading"
+                required>
+            </div>
+            
+            <div class="form-group">
+              <label for="lastName">Prezime: *</label>
+              <input 
+                type="text" 
+                id="lastName" 
+                name="lastName" 
+                [(ngModel)]="user.lastName" 
+                placeholder="Unesite prezime"
+                [disabled]="loading"
+                required>
+            </div>
+          </div>
 
-<form (ngSubmit)="submit()" #registrationForm="ngForm">
-	<table>
-		<tr>
-			<td><label for="username">Korisničko ime:</label></td>
-			<td><input type="text" id="username" name="username" [(ngModel)]="user.username" required (input)="onUsernameInput()" /></td>
-		</tr>
-		<tr>
-			<td><label for="email">Email:</label></td>
-			<td><input type="email" id="email" name="email" [(ngModel)]="user.email" required /></td>
-		</tr>
-		<tr>
-			<td><label for="password">Lozinka:</label></td>
-			<td><input type="password" id="password" name="password" [(ngModel)]="password" required (input)="onPasswordInput()"/></td>
-		</tr>
-		<tr>
-			<td></td>
-			<td>
-				<ul style="margin: 0.5em 0 0 0; padding-left: 1.2em; font-size: 0.95em;">
-					<li [style.color]="passwordValidations.length ? 'green' : 'red'">
-						8-12 karaktera
-					</li>
-					<li [style.color]="passwordValidations.upper ? 'green' : 'red'">
-						Bar jedno veliko slovo
-					</li>
-					<li [style.color]="passwordValidations.number ? 'green' : 'red'">
-						Bar jedan broj
-					</li>
-					<li [style.color]="passwordValidations.special ? 'green' : 'red'">
-						Bar jedan specijalan znak
-					</li>
-					<li [style.color]="passwordValidations.startsWithLetter ? 'green' : 'red'">
-						Počinje slovom
-					</li>
-				</ul>
-			</td>
-		</tr>
-		<tr>
-			<td><label for="password-confirm">Potvrdi lozinku:</label></td>
-			<td><input type="password" id="password-confirm" name="password-confirm" [(ngModel)]="passwordConfirm" required (input)="onPasswordConfirmInput()" /></td>
-		</tr>
-		<tr>
-			<td></td>
-			<td>
-				<ul style="margin: 0.5em 0 0 0; padding-left: 1.2em; font-size: 0.95em;">
-					<li [style.color]="passwordValidations.match ? 'green' : 'red'">
-						Lozinke se poklapaju
-					</li>
-				</ul>
-			</td>
-		</tr>
-		<tr>
-			<td><label for="firstName">Ime:</label></td>
-			<td><input type="text" id="firstName" name="firstName" [(ngModel)]="user.firstName" required /></td>
-		</tr>
-		<tr>
-			<td><label for="lastName">Prezime:</label></td>
-			<td><input type="text" id="lastName" name="lastName" [(ngModel)]="user.lastName" required /></td>
-		</tr>
-		<tr>
-			<td><label for="phone">Telefon:</label></td>
-			<td><input type="tel" id="phone" name="phone" [(ngModel)]="user.phoneNumber" required pattern="[0-9+\-() ]{6,}" /></td> <!-- Check for phone number formats -->
-		</tr>
-		
-		<tr>
-			<td>Tip:</td>
-			<td>
-				<label><input type="radio" name="userRole" [(ngModel)]="user.role" value="user" required /> Korisnik</label>
-				<label><input type="radio" name="userRole" [(ngModel)]="user.role" value="manager" required /> Menadžer</label>
-			</td>
-		</tr>
+          <div class="form-group">
+            <label for="email">E-mail: *</label>
+            <input 
+              type="email" 
+              id="email" 
+              name="email" 
+              [(ngModel)]="user.email" 
+              placeholder="Unesite e-mail"
+              [disabled]="loading"
+              required>
+          </div>
+          
+          <div class="form-group">
+            <label for="phone">Telefon: *</label>
+            <input 
+              type="tel" 
+              id="phone" 
+              name="phone" 
+              [(ngModel)]="user.phoneNumber" 
+              placeholder="Unesite telefonski broj"
+              pattern="[0-9+\-() ]{6,}"
+              [disabled]="loading"
+              required>
+          </div>
+        </div>
 
-		@if (user.role === "manager") {
-			<tr>
-				<td><label for="firmName">Naziv firme:</label></td>
-				<td><input type="text" id="firmName" name="firmName" [(ngModel)]="firm.name" required /></td>
-			</tr>
-			<tr>
-				<td><label for="firmAddress">Adresa firme:</label></td>
-				<td><input type="text" id="firmAddress" name="firmAddress" [(ngModel)]="firm.address" required /></td>
-			</tr>
-			<tr>
-				<td><label for="firmId">Matični broj:</label></td>
-				<td><input type="text" id="firmId" name="firmId" [(ngModel)]="firm.firmId" required pattern="^[0-9]{8}$" /></td>
-			</tr>
-			<tr>
-				<td><label for="taxId">PIB firme:</label></td>
-				<td><input type="text" id="taxId" name="taxId" [(ngModel)]="firm.taxId" required pattern="^[1-9][0-9]{8}$" /></td>
-			</tr>
-		}
+        <div class="form-section">
+          <h3>Tip naloga</h3>
+          
+          <div class="radio-group" style="margin-bottom: 0;">
+            <label class="radio-label">
+              <input 
+                type="radio" 
+                name="userRole" 
+                [(ngModel)]="user.role" 
+                value="user" 
+                [disabled]="loading"
+                required>
+              Korisnik
+            </label>
+            <label class="radio-label">
+              <input 
+                type="radio" 
+                name="userRole" 
+                [(ngModel)]="user.role" 
+                value="manager" 
+                [disabled]="loading"
+                required>
+              Menadžer
+            </label>
+          </div>
+        </div>
 
-		<tr>
-			<td><label for="profilePicture">Profilna slika:</label></td>
-			<td><input type="file" id="profilePicture" name="profilePicture" accept="image/*" (change)="onProfilePictureChange($event)"/></td>
-		</tr>
-		@if (profilePicturePreview != null)
-		{
-			<tr>
-				<td></td>
-				<td><img [src]="profilePicturePreview"></td>
-			</tr>
-		}
-		<tr>
-			<td></td>
-			<td>
-				<button type="submit" [disabled]="!registrationForm.form.valid || password !== passwordConfirm || !passwordValidations.general || usernameHasWhitespace">Registruj se</button>
-			</td>
-		</tr>
-	</table>
-</form>
+        @if (user.role === "manager") {
+          <div class="form-section">
+            <h3>Podaci firme</h3>
+            
+            <div class="form-group">
+              <label for="firmName">Naziv firme: *</label>
+              <input 
+                type="text" 
+                id="firmName" 
+                name="firmName" 
+                [(ngModel)]="firm.name" 
+                placeholder="Unesite naziv firme"
+                [disabled]="loading"
+                required>
+            </div>
+            
+            <div class="form-group">
+              <label for="firmAddress">Adresa firme: *</label>
+              <input 
+                type="text" 
+                id="firmAddress" 
+                name="firmAddress" 
+                [(ngModel)]="firm.address" 
+                placeholder="Unesite adresu"
+                [disabled]="loading"
+                required>
+            </div>
+            
+            <div class="form-row">
+              <div class="form-group">
+                <label for="firmCity">Grad: *</label>
+                <input 
+                  type="text" 
+                  id="firmCity" 
+                  name="firmCity" 
+                  [(ngModel)]="firm.city" 
+                  placeholder="Unesite grad"
+                  [disabled]="loading"
+                  required>
+              </div>
 
-<span style="color: red;">{{msg.message}}</span>
+              <div class="form-group">
+                <label for="firmId">Matični broj: *</label>
+                <input 
+                  type="text" 
+                  id="firmId" 
+                  name="firmId" 
+                  [(ngModel)]="firm.firmId" 
+                  placeholder="Unesite matični broj"
+                  pattern="^[0-9]{8}$"
+                  [disabled]="loading"
+                  required>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="taxId">PIB firme: *</label>
+              <input 
+                type="text" 
+                id="taxId" 
+                name="taxId" 
+                [(ngModel)]="firm.taxId" 
+                placeholder="Unesite PIB"
+                pattern="^[1-9][0-9]{8}$"
+                [disabled]="loading"
+                required>
+            </div>
+          </div>
+        }
+
+        <div class="form-section">
+          <h3>Lozinka</h3>
+          
+          <div class="form-group">
+            <label for="password">Lozinka: *</label>
+            <input 
+              type="password" 
+              id="password" 
+              name="password" 
+              [(ngModel)]="password" 
+              placeholder="Unesite lozinku"
+              (input)="onPasswordInput()"
+              [disabled]="loading"
+              required>
+            
+            <ul class="validation-list">
+              <li [style.color]="passwordValidations.length ? 'green' : 'red'">
+                {{ passwordValidations.length ? '✓' : '✗' }} 8-12 karaktera
+              </li>
+              <li [style.color]="passwordValidations.upper ? 'green' : 'red'">
+                {{ passwordValidations.upper ? '✓' : '✗' }} Bar jedno veliko slovo
+              </li>
+              <li [style.color]="passwordValidations.number ? 'green' : 'red'">
+                {{ passwordValidations.number ? '✓' : '✗' }} Bar jedan broj
+              </li>
+              <li [style.color]="passwordValidations.special ? 'green' : 'red'">
+                {{ passwordValidations.special ? '✓' : '✗' }} Bar jedan specijalan znak
+              </li>
+              <li [style.color]="passwordValidations.startsWithLetter ? 'green' : 'red'">
+                {{ passwordValidations.startsWithLetter ? '✓' : '✗' }} Počinje slovom
+              </li>
+            </ul>
+          </div>
+          
+          <div class="form-group">
+            <label for="password-confirm">Potvrdi lozinku: *</label>
+            <input 
+              type="password" 
+              id="password-confirm" 
+              name="password-confirm" 
+              [(ngModel)]="passwordConfirm" 
+              placeholder="Ponovite lozinku"
+              (input)="onPasswordConfirmInput()"
+              [disabled]="loading"
+              required>
+            
+            <ul class="validation-list">
+              <li [style.color]="passwordValidations.match ? 'green' : 'red'">
+                {{ passwordValidations.match ? '✓' : '✗' }} Lozinke se poklapaju
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h3>Profilna slika</h3>
+          
+          <div class="form-group">
+            <label for="profilePicture">Izaberite sliku:</label>
+            <input 
+              type="file" 
+              id="profilePicture" 
+              name="profilePicture" 
+              accept="image/*" 
+              (change)="onProfilePictureChange($event)"
+              [disabled]="loading">
+          </div>
+          
+          @if (profilePicturePreview) {
+            <div class="form-group">
+              <label>Pregled slike:</label>
+              <img [src]="profilePicturePreview" class="profile-preview">
+            </div>
+          }
+        </div>
+
+        <div class="form-actions">
+          <button 
+            type="submit" 
+            class="btn btn-submit" 
+            [disabled]="!registrationForm.form.valid || password !== passwordConfirm || !passwordValidations.general || usernameHasWhitespace || loading">
+            @if (loading) {
+              Registracija u toku...
+            } @else {
+              Registruj se
+            }
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,161 @@
+<div class="view-panel-container">
+  <div class="view-panel-header">
+    <h2>Registracija radnog prostora</h2>
+  </div>
+  <div class="view-panel-content">
+    <div class="workspace-form-wrapper">
+      <div class="messages">
+        @if (successMessage) {
+          <div class="success-message">{{ successMessage }}</div>
+        }
+        @if (errorMessage) {
+          <div class="error-message">{{ errorMessage }}</div>
+        }
+      </div>
+
+      <form (ngSubmit)="onSubmit()" class="workspace-form">
+        <div class="form-section">
+          <h3>Osnovne informacije</h3>
+
+          <div class="form-group">
+            <label for="name">Naziv radnog prostora: *</label>
+            <input 
+              type="text" 
+              id="name" 
+              [(ngModel)]="workspace.name" 
+              name="name"
+              placeholder="Unesite naziv radnog prostora"
+              [disabled]="loading"
+              required>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="capacity">Broj stolova: *</label>
+              <input 
+                type="number" 
+                id="capacity" 
+                [(ngModel)]="workspace.capacity" 
+                name="capacity"
+                placeholder="Minimalno 5"
+                min="5"
+                (keypress)="onKeyPress($event, $any($event.target), 'capacity')"
+                (input)="onInput($event)"
+                [disabled]="loading"
+                required>
+            </div>
+
+            <div class="form-group">
+              <label for="pricePerHour">Cena po satu: *</label>
+              <input 
+                type="number" 
+                id="pricePerHour" 
+                [(ngModel)]="workspace.pricePerHour" 
+                name="pricePerHour"
+                placeholder="0 ili više"
+                min="0"
+                step="0.01"
+                (keypress)="onKeyPress($event, $any($event.target), 'price')"
+                (input)="onInput($event)"
+                [disabled]="loading"
+                required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="maximumViolations">Maksimalno dozvoljenih kršenja: *</label>
+            <input 
+              type="number" 
+              id="maximumViolations" 
+              [(ngModel)]="workspace.maximumViolations" 
+              name="maximumViolations"
+              placeholder="0 ili više"
+              min="0"
+              value="3"
+              (keypress)="onKeyPress($event, $any($event.target), 'violations')"
+              (input)="onInput($event)"
+              [disabled]="loading"
+              required>
+          </div>
+
+          <div class="form-group">
+            <label for="description">Opis radnog prostora (maksimum 300 karaktera):</label>
+            <textarea 
+              id="description" 
+              [(ngModel)]="workspace.description" 
+              name="description"
+              placeholder="Unesite opis radnog prostora"
+              maxlength="300"
+              [disabled]="loading"
+              rows="4"></textarea>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h3>Lokacija</h3>
+
+          <div class="form-group">
+            <label for="address">Adresa: *</label>
+            <input 
+              type="text" 
+              id="address" 
+              [(ngModel)]="workspace.address" 
+              name="address"
+              placeholder="Unesite adresu radnog prostora"
+              [disabled]="loading"
+              required>
+          </div>
+
+          <div class="form-group">
+            <label for="city">Grad: *</label>
+            <input 
+              type="text" 
+              id="city" 
+              [(ngModel)]="workspace.city" 
+              name="city"
+              placeholder="Unesite grad"
+              [disabled]="loading"
+              required>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="lat">Geografska širina: *</label>
+              <input 
+                type="number" 
+                id="lat" 
+                [(ngModel)]="workspace.lat" 
+                name="lat"
+                [disabled]="loading"
+                required>
+            </div>
+
+            <div class="form-group">
+              <label for="lon">Geografska dužina: *</label>
+              <input 
+                type="number" 
+                id="lon"
+                [(ngModel)]="workspace.lon" 
+                name="lon"
+                [disabled]="loading"
+                required>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-submit" [disabled]="loading">
+            @if (loading) {
+              Registrovanje u toku...
+            } @else {
+              Registruj radni prostor
+            }
+          </button>
+          <button type="button" class="btn btn-cancel" (click)="onCancel()" [disabled]="loading">
+            Obriši
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

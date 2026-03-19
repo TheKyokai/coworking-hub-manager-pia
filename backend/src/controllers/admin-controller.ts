@@ -6,6 +6,7 @@ import bcrypt from 'bcryptjs';
 import firm from '../models/firm';
 import fs from 'fs';
 import path from 'path';
+import workspace from '../models/workspace';
 
 const JWT_KEY = "key"; // use env variable
 
@@ -41,7 +42,6 @@ class AdminController
             res.status(500).json({ message: 'Greška pri odobravanju korisnika' });
         }
     }
-
 
     declineUser = async (req: express.Request, res: express.Response) => 
     {
@@ -125,6 +125,68 @@ class AdminController
             res.status(200).json({ message: 'Korisnik je uspešno obrisan' });
         } catch (err) {
             res.status(500).json({ message: 'Greška pri brisanju korisnika' });
+        }
+    }
+
+    approveWorkspace = async (req: express.Request, res: express.Response) =>
+    {
+        try {
+            const { firmId, workspaceName } = req.body;
+
+            if (!firmId || !workspaceName)
+                return res.status(400).json({ message: 'Matični broj firme i ime radnog prostora su obavezni' });
+
+            const workspaceData = await workspace.findOne({ 
+                firmId: firmId, 
+                name: workspaceName 
+            });
+
+            if (!workspaceData)
+                return res.status(404).json({ message: 'Radni prostor nije pronađen' });
+
+            workspaceData.status = 'approved';
+            await workspaceData.save();
+
+            res.status(200).json({ message: 'Radni prostor je uspešno odobren' });
+        } catch (err) {
+            res.status(500).json({ message: 'Greška pri odobravanju radnog prostora' });
+        }
+    }
+
+    declineWorkspace = async (req: express.Request, res: express.Response) =>
+    {
+        try {
+            const { firmId, workspaceName } = req.body;
+
+            if (!firmId || !workspaceName)
+                return res.status(400).json({ message: 'Matični broj firme i ime radnog prostora su obavezni' });
+
+            const workspaceData = await workspace.findOne({ 
+                firmId: firmId, 
+                name: workspaceName 
+            });
+
+            if (!workspaceData)
+                return res.status(404).json({ message: 'Radni prostor nije pronađen' });
+
+            // Delete workspace pictures if they exist
+            // if (workspaceData.pictures) 
+            //     workspaceData.pictures.forEach((picturePath: string) => {
+            //         const fullPath = path.join(process.cwd(), picturePath);
+            //         if (fs.existsSync(fullPath))
+            //             fs.unlinkSync(fullPath);
+            //     });
+            
+
+            // Delete the workspace
+            await workspace.deleteOne({ 
+                firmId: firmId, 
+                name: workspaceName 
+            });
+
+            res.status(200).json({ message: 'Radni prostor je uspešno odbijen i obrisan' });
+        } catch (err) {
+            res.status(500).json({ message: 'Greška pri odbijanju radnog prostora' });
         }
     }
 

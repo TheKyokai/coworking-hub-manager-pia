@@ -16,11 +16,15 @@ export class ForgottenPassword {
 
   identifier = '';
   msg = new Message();
+  loading = false;
 
 
   async submit()
   {
+    this.loading = true;
+    this.msg.message = '';
     this.msg = await this.authService.requestPasswordReset(this.identifier);
+    this.loading = false;
   }
 
 }

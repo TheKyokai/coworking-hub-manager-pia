@@ -71,4 +71,44 @@ export class AdminService {
     }
   }
 
+  async approveWorkspace(firmId: string, workspaceName: String)
+  {
+    try {
+      const response = await firstValueFrom(
+        this.http.post<Message>(
+          `${this.backUrl}/admin/approve-workspace`,
+          { firmId, workspaceName },
+          { observe: 'response' }
+        )
+      );
+      const msg = new Message();
+      msg.message = response.body?.message || 'Radni prostor je odobren.';
+      return msg;
+    } catch (error: any) {
+      const msg = new Message();
+      msg.message = error?.error?.message || 'Greška pri odobravanju radnog prostora.';
+      return msg;
+    }
+  }
+
+  async declineWorkspace(firmId: string, workspaceName: String)
+  {
+    try {
+      const response = await firstValueFrom(
+        this.http.post<Message>(
+          `${this.backUrl}/admin/decline-workspace`,
+          { firmId, workspaceName },
+          { observe: 'response' }
+        )
+      );
+      const msg = new Message();
+      msg.message = response.body?.message || 'Radni prostor je odbijen.';
+      return msg;
+    } catch (error: any) {
+      const msg = new Message();
+      msg.message = error?.error?.message || 'Greška pri odbijanju radnog prostora.';
+      return msg;
+    }
+  }
+
 }

@@ -1,23 +1,58 @@
-<h2>Admin Prijava</h2>
+<div class="view-panel-container">
+    <div class="view-panel-header">
+        <h2>Admin prijava</h2>
+    </div>
+    
+    <div class="view-panel-content admin-login-content">
+        <div class="admin-login-form-wrapper">
+            <div class="messages">
+                @if (msg.message) {
+                    <div class="error-message">{{ msg.message }}</div>
+                }
+            </div>
 
-<form (ngSubmit)="submit()" #adminLoginForm="ngForm">
-	<table>
-		<tr>
-			<td><label for="username">Korisničko ime:</label></td>
-			<td><input type="text" id="username" name="username" [(ngModel)]="username" required /></td>
-		</tr>
-		<tr>
-			<td><label for="password">Lozinka:</label></td>
-			<td><input type="password" id="password" name="password" [(ngModel)]="password" required /></td>
-		</tr>
-		<tr>
-			<td></td>
-			<td>
-				<button type="submit" [disabled]="!adminLoginForm.form.valid">Prijavi se</button>
-			</td>
-		</tr>
-	</table>
-</form>
+            <form (ngSubmit)="submit()" #adminLoginForm="ngForm" class="admin-login-form">
+                <div class="form-section">
+                    <div class="form-group">
+                        <label for="username">Korisničko ime: *</label>
+                        <input 
+                            type="text" 
+                            id="username" 
+                            name="username" 
+                            [(ngModel)]="username" 
+                            placeholder="Unesite korisničko ime"
+                            [disabled]="loading"
+                            required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password">Lozinka: *</label>
+                        <input 
+                            type="password" 
+                            id="password" 
+                            name="password" 
+                            [(ngModel)]="password" 
+                            placeholder="Unesite lozinku"
+                            [disabled]="loading"
+                            required>
+                    </div>
+                </div>
 
-<br>
-<span style="color: red;">{{msg.message}}</span>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-submit" [disabled]="!adminLoginForm.form.valid || loading">
+                        @if (loading) {
+                            Prijava u toku...
+                        } @else {
+                            Prijavi se
+                        }
+                    </button>
+                </div>
+            </form>
+
+			<div class="login-footer">
+				<a [routerLink]="['/forgotten-password']" class="forgot-link">Zaboravljena lozinka?</a>
+			</div>
+
+        </div>
+    </div>
+</div>

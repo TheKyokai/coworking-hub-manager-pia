@@ -44,6 +44,8 @@ export class AdminUserView implements OnInit {
       return 'Član';
     if (role === 'manager')
       return 'Menadžer';
+    if (role === 'admin')
+      return 'Admin'
     return role;
   }
 

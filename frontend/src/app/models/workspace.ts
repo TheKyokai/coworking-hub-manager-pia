@@ -1,4 +1,5 @@
 import PrivateSpace from "./private-space"
+import Rating from "./rating"
 
 export default class Workspace
 {
@@ -9,7 +10,21 @@ export default class Workspace
 
     pricePerHour = 0
     capacity = 0
+    maximumViolations = 0
 
-    status = "" // pending/approved/rejected
+    description = ""
+    
+    // Coordinates
+    lon = 0
+    lat = 0
+    city = ""
+    address = ""
+
+    status = "" // pending/approved
     privateSpaces: PrivateSpace[] = []
+    
+    
+
+    comments: Comment[] = []
+    ratings: Rating[] = []
 }

@@ -3,22 +3,20 @@ import { Login } from './authentication/login/login';
 import { Registration } from './authentication/registration/registration';
 import { AdminLogin } from './authentication/admin-login/admin-login';
 import { Home } from './home/home';
-import { Profile } from './profile/profile';
 import { ForgottenPassword } from './authentication/forgotten-password/forgotten-password';
 import { ResetPassword } from './authentication/reset-password/reset-password';
 import { AdminDashboard } from './admin/admin-dashboard/admin-dashboard';
-import { Dashboard } from './dashboard/dashboard';
 import { AdminUserProfile } from './admin/admin-user-profile/admin-user-profile';
+import { Dashboard } from './registered-user/dashboard/dashboard';
 
 export const routes: Routes = [
     {path: '', component: Home},
-    {path: 'login', component: Login},
     {path: 'registration', component: Registration},
+    {path: 'login', component: Login},
+    {path: 'dashboard', component: Dashboard},
     {path: 'admin-login', component: AdminLogin},
     {path: 'admin-dashboard', component: AdminDashboard},
     {path: 'admin-user-profile/:username', component: AdminUserProfile},
     {path: 'forgotten-password', component: ForgottenPassword},
     {path: 'reset-password/:token', component: ResetPassword},
-    {path: 'profile', component: Profile},
-    {path: 'dashboard', component: Dashboard},
 ];

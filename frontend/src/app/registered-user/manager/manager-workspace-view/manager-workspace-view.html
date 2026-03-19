@@ -1,0 +1,50 @@
+@if (loading) {
+  <div class="loading">
+    <p>Učitavanje...</p>
+  </div>
+}
+
+@if (!loading) {
+  <div class="view-panel-container">
+    <div class="view-panel-header">
+      <h2>Radni prostori</h2>
+    </div>
+    
+    @if (workspaces.length === 0) {
+      <div class="empty-state">
+        <p>Vaša firma nema registrovanih radnih prostora.</p>
+      </div>
+    }
+
+    @if (workspaces.length > 0) {
+      <div class="workspaces-list">
+        <table class="workspaces-table">
+          <thead>
+            <tr>
+              <th>Naziv</th>
+              <th>Grad</th>
+              <th>Broj stolova u otvorenom prostoru</th>
+              <th>Privatni prostori</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (workspace of workspaces; track workspace.firmId + workspace.name) {
+              <tr class="workspace-row">
+                <td>{{ workspace.name }}</td>
+                <td>{{ workspace.city }}</td>
+                <td>{{ workspace.capacity }}</td>
+                <td>{{ getPrivateSpacesDisplay(workspace.privateSpaces) }}</td>
+                <td>
+                  <span class="status" [ngClass]="'status-' + (workspace.status || 'pending')">
+                    {{ workspace.status === 'pending' ? 'Na čekanju' : workspace.status === 'approved' ? 'Odobren' : workspace.status }}
+                  </span>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+}

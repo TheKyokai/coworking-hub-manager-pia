@@ -7,7 +7,6 @@ const JWT_KEY = "key"
 // Middleware to verify JWT
 export function authenticateJWT(req: express.Request, res: express.Response, next: express.NextFunction) {
     const authHeader = req.headers.authorization;
-    
     if (!authHeader || !authHeader.startsWith("Bearer ")) 
         return res.sendStatus(401)
     

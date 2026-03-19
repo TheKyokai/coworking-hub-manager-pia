@@ -5,8 +5,10 @@
 }
 
 @if (!loading) {
-  <div class="tab-content">
-    <h2>Zahtevi za registraciju na čekanju</h2>
+  <div class="view-panel-container">
+    <div class="view-panel-header">
+      <h2>Obrada zahteva za registraciju korisnika</h2>
+    </div>
     
     @if (pendingRegistrations.length === 0) {
       <div class="empty-state">

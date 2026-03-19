@@ -1,28 +1,36 @@
-<div class="admin-dashboard">
-  <h1>Admin panel</h1>
-
-  
-  <div class="tab-navigation">
+<div class="dashboard-container">
+  <div class="dashboard-tabs">
     <button 
+      class="tab-button" 
       [class.active]="activeTab === 'pending'"
-      (click)="switchTab('pending')"
-      class="tab-button">
-      Zahtevi na čekanju
+      (click)="switchTab('pending')">
+      Obrada zahteva za registraciju korisnika
     </button>
     <button 
+      class="tab-button" 
+      [class.active]="activeTab === 'workspaces'"
+      (click)="switchTab('workspaces')">
+      Obrada zahteva za registraciju radnih prostora
+    </button>
+    <button 
+      class="tab-button" 
       [class.active]="activeTab === 'users'"
-      (click)="switchTab('users')"
-      class="tab-button">
-      Svi korisnici
+      (click)="switchTab('users')">
+      Upravljanje korisnicima
     </button>
   </div>
 
-  
-  @if (activeTab === 'pending') {
-    <app-admin-request-view></app-admin-request-view>
-  }
+  <div class="dashboard-content">
+    @if (activeTab === 'pending') {
+      <app-admin-request-view></app-admin-request-view>
+    }
 
-  @if (activeTab === 'users') {
-    <app-admin-user-view></app-admin-user-view>
-  }
+    @if (activeTab === 'workspaces') {
+      <app-admin-workspace-request-view></app-admin-workspace-request-view>
+    }
+
+    @if (activeTab === 'users') {
+      <app-admin-user-view></app-admin-user-view>
+    }
+  </div>
 </div>

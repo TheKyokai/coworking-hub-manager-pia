@@ -17,6 +17,7 @@ export class Registration implements OnInit, OnDestroy{
   user = new User();
   password = '';
   passwordConfirm = '';
+  loading = false;
 
   firm = new Firm();
   msg = new Message();
@@ -107,10 +108,15 @@ export class Registration implements OnInit, OnDestroy{
   }
 
   async submit() {
+    this.loading = true;
+    this.msg.message = '';
+    
     if (this.user.role === 'manager') {
       this.msg = await this.authService.registerManager(this.user, this.firm, this.password, this.profilePicture);
     } else {
       this.msg = await this.authService.registerUser(this.user, this.password, this.profilePicture);
     }
+    
+    this.loading = false;
   }
 }

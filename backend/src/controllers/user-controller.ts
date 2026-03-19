@@ -201,6 +201,7 @@ class UserController
                     taxId: sentFirm.taxId,
                     name: sentFirm.name,
                     address: sentFirm.address,
+                    city: sentFirm.city,
                     managers: [sentUser.username],
                     status: 'pending',
                 });
@@ -247,6 +248,7 @@ class UserController
                 phoneNumber: sentUser.phoneNumber,
                 role: sentUser.role,
                 firmId: sentFirm.firmId,
+                city: sentFirm.city,
                 profilePicture: profilePicturePath,
                 status: 'pending',
             });
@@ -351,10 +353,10 @@ class UserController
     getAllUsers = async (req: express.Request, res: express.Response) => 
     {
         try {
-            const allUsers = await user.find({ role: { $ne: 'admin' } });
+            const allUsers = await user.find();
             res.status(200).json(allUsers);
         } catch (err) {
-            res.status(500).json({ message: 'Error fetching all users' });
+            res.status(500).json(null);
         }
     }
 
