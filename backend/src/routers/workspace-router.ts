@@ -30,6 +30,12 @@ workspaceRouter.route("/add-private")
         workspaceController.addPrivateSpace
     )
 
+workspaceRouter.route("/update-private")
+    .post(
+        authenticateJWT,
+        requireRoles("manager"),
+        workspaceController.updatePrivateSpace
+    )
 
 workspaceRouter.route("/comment")
     .post(
@@ -64,7 +70,7 @@ workspaceRouter.route("/pending-workspaces")
         workspaceController.getPendingWorkspaces
     )
 
-workspaceRouter.route("/get/:firmID/:workspaceName") // Potential role restriction
+workspaceRouter.route("/get/:firmId/:workspaceName") // Potential role restriction
     .get(
         workspaceController.getWorkspace
     )

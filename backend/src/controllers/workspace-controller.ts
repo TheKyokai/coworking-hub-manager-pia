@@ -1,6 +1,7 @@
 import express from 'express';
 import workspace from '../models/workspace';
 import firm from '../models/firm';
+import reservation from '../models/reservation';
 
 
 
@@ -51,7 +52,7 @@ class WorkspaceController
     updateWorkspace = async (req: express.Request, res: express.Response) =>
     {
         try {
-            const sentWorkspace = req.body.sentWorkspace;
+            const sentWorkspace = req.body.workspace;
 
             if (!sentWorkspace)
                 return res.status(400).json({message: "Neophodno je poslati nove podatke"});
@@ -63,6 +64,10 @@ class WorkspaceController
             workspaceRecord.description = sentWorkspace.description;
             workspaceRecord.pricePerHour = sentWorkspace.pricePerHour;
             workspaceRecord.maximumViolations = sentWorkspace.maximumViolations;
+            workspaceRecord.city = sentWorkspace.city;
+            workspaceRecord.address = sentWorkspace.address;
+            workspaceRecord.lat = sentWorkspace.lat;
+            workspaceRecord.lon = sentWorkspace.lon;
             
             await workspaceRecord.save();
             res.status(200).json({ message: 'Radni prostor je uspešno ažuriran' });
@@ -74,7 +79,7 @@ class WorkspaceController
     addPrivateSpace = async (req: express.Request, res: express.Response) =>
     {
         try {
-            const { workspaceName, firmId, spaceName, type, capacity, description} = req.body;
+            const { workspaceName, firmId, spaceName, type, capacity, description, pricePerHour} = req.body;
             
             const workspaceRecord = await workspace.findOne({firmId: firmId, name: workspaceName});
             
@@ -90,7 +95,9 @@ class WorkspaceController
             if (nameUsed)
                 return res.status(400).json({message: "Ovo ime je već iskorišćeno u okviru radnog prostora"});
 
-            await workspace.updateOne({firmId: firmId, name: workspaceName}, {$push: {privateSpaces: { spaceName: spaceName, type: type, capacity: capacity, description: description }}});
+            await workspace.updateOne(
+                {firmId: firmId, name: workspaceName},
+                {$push: {privateSpaces: { spaceName: spaceName, type: type, capacity: capacity, description: description, pricePerHour: pricePerHour }}});
             res.status(200).json({ message: 'Privatni radni prostor je uspešno dodat' });
         } catch (err) {
             res.status(500).json({ message: 'Greška pri dodavanju privatnog radnog prostora' });
@@ -100,14 +107,14 @@ class WorkspaceController
     updatePrivateSpace = async (req: express.Request, res: express.Response) =>
     {
         try {
-            const {workspaceName, firmId, spaceName, newDescription, newCapacity} = req.body;
+            const {workspaceName, firmId, spaceName, newDescription, newCapacity, newPricePerHour, newType} = req.body;
 
             const workspaceRecord = await workspace.findOne({firmId: firmId, name: workspaceName});
             if (!workspaceRecord)
                 return res.status(400).json({message: "Nije pronađen ovaj radni prostor"});
 
             await workspace.updateOne({firmId: firmId, name: workspaceName},
-                {$set: { "privateSpaces.$[space].description": newDescription, "privateSpaces.$[space].capacity": newCapacity }},
+                {$set: { "privateSpaces.$[space].description": newDescription, "privateSpaces.$[space].capacity": newCapacity, "privateSpaces.$[space].pricePerHour": newPricePerHour, "privateSpaces.$[space].type": newType }},
                 {arrayFilters: [{"space.spaceName": spaceName}]}
             );
             
@@ -117,6 +124,7 @@ class WorkspaceController
         }
     }
 
+    // TODO: Check commenting and rating 
     commentWorkspace = async (req: express.Request, res: express.Response) =>
     {
         try {
@@ -130,7 +138,19 @@ class WorkspaceController
             let commentCount = 0;
             workspaceRecord.comments.forEach((comment: any) => { if (comment.username === username) commentCount++; });
 
-            // TODO: Reservation count check
+            const confirmedReservationsCount = await reservation.countDocuments({
+                username: username,
+                firmId: firmId,
+                workspaceName: workspaceName,
+                status: "confirmed"
+            });
+
+            if (commentCount >= confirmedReservationsCount) {
+                return res.status(400).json({
+                    message: "Ne možete ostaviti više komentara nego što imate potvrđenih rezervacija"
+                });
+            }
+
 
             await workspace.updateOne({firmId: firmId, name: workspaceName}, {$push: {comments: {comment: comment, username: username}}});
         
@@ -152,8 +172,18 @@ class WorkspaceController
 
             let ratingCount = 0;
             workspaceRecord.ratings.forEach((rating: any) => { if (rating.username === username) ratingCount++; });
+                const confirmedReservationsCount = await reservation.countDocuments({
+                username: username,
+                firmId: firmId,
+                workspaceName: workspaceName,
+                status: "confirmed"
+            });
 
-            // TODO: Reservation count check
+            if (ratingCount >= confirmedReservationsCount) {
+                return res.status(400).json({
+                    message: "Ne možete ostaviti više ocena nego što imate potvrđenih rezervacija"
+                });
+            }
 
             await workspace.updateOne({firmId: firmId, name: workspaceName}, {$push: {ratings: {rating: ratingType, username: username}}});
         
@@ -207,7 +237,8 @@ class WorkspaceController
             if (!firmId || !workspaceName)
                 return res.status(401).json(null);
 
-            const workspaceData = await workspace.find({firmId: firmId, name: workspaceName});
+            
+            const workspaceData = await workspace.findOne({firmId: firmId, name: workspaceName});
             if (workspaceData == null)
                 res.status(401).json(null)
             else
@@ -225,7 +256,7 @@ class WorkspaceController
 
     }
 
-    deleteWorkspacePictur = async (req: express.Request, res: express.Response) =>
+    deleteWorkspacePicture = async (req: express.Request, res: express.Response) =>
     {
 
     }

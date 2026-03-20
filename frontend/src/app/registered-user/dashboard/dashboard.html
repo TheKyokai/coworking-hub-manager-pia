@@ -49,6 +49,41 @@
   } 
   @else 
   {
-    <app-profile></app-profile>
+    <div class="dashboard-tabs">
+      <button 
+        class="tab-button" 
+        [class.active]="selectedTab === 'profile'"
+        (click)="selectTab('profile')">
+        Profil
+      </button>
+      <button 
+        class="tab-button" 
+        [class.active]="selectedTab === 'user-reservations'"
+        (click)="selectTab('user-reservations')">
+        Rezervacije
+      </button>
+      <button 
+        class="tab-button" 
+        [class.active]="selectedTab === 'browse-workspaces'"
+        (click)="selectTab('browse-workspaces')">
+        Pretraga radnih prostora
+      </button>
+    </div>
+
+    <div class="dashboard-content">
+      @if (selectedTab === 'profile') 
+      {
+        <app-profile></app-profile>
+      }
+      @if (selectedTab === 'user-reservations') 
+      {
+        <app-user-reservation-view></app-user-reservation-view>
+      }
+      @if (selectedTab === 'browse-workspaces') 
+      {
+        <app-browse-workspaces></app-browse-workspaces>
+      }
+
+    </div>
   }
 </div>

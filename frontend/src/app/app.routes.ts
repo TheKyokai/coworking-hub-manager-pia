@@ -8,6 +8,7 @@ import { ResetPassword } from './authentication/reset-password/reset-password';
 import { AdminDashboard } from './admin/admin-dashboard/admin-dashboard';
 import { AdminUserProfile } from './admin/admin-user-profile/admin-user-profile';
 import { Dashboard } from './registered-user/dashboard/dashboard';
+import { WorkspacePage } from './workspace-page/workspace-page';
 
 export const routes: Routes = [
     {path: '', component: Home},
@@ -19,4 +20,5 @@ export const routes: Routes = [
     {path: 'admin-user-profile/:username', component: AdminUserProfile},
     {path: 'forgotten-password', component: ForgottenPassword},
     {path: 'reset-password/:token', component: ResetPassword},
+    {path: 'workspace/:firmId/:name', component: WorkspacePage},
 ];

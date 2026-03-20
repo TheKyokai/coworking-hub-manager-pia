@@ -1,1 +1,279 @@
-<p>workspace-view works!</p>
+@if (workspace) {
+  <div class="view-panel-container">
+    <div class="view-panel-header">
+        <h2>Detalji radnog prostora</h2>
+        @if (user)
+        {
+            <div class="header-buttons">
+                @if (user.role === 'manager')
+                {
+                    @if (!isEditing && workspace.status === 'approved') 
+                    {
+                        <button type="button" class="btn btn-edit" (click)="toggleEditMode()" [disabled]="loading">
+                            Uredi
+                        </button>
+                    }
+                    <button type="button" class="btn btn-back" (click)="onBack()" [disabled]="loading">
+                        Nazad
+                    </button>
+                }
+
+                @if (user.role === 'user')
+                {
+                    @if (!isReserving) 
+                    {
+                        <button type="button" class="btn btn-edit" (click)="toggleReservationMode()" [disabled]="loading">
+                            Rezerviši
+                        </button>
+                    }
+                    @else 
+                    {
+                        <button type="button" class="btn btn-back" (click)="toggleReservationMode()" [disabled]="loading">
+                            Nazad
+                        </button>
+                    }
+                }
+            </div>
+        }
+    </div>
+
+    <!-- View Mode -->
+    @if (!isEditing) {
+      <div class="view-panel-content">
+        <div class="workspace-details">
+          <div class="workspace-info">
+            <div class="info-row">
+              <label>Naziv:</label>
+              <span style="font-weight: bold;">{{ workspace.name }}</span>
+            </div>
+            <div class="info-row">
+              <label>Grad:</label>
+              <span>{{ workspace.city }}</span>
+            </div>
+            <div class="info-row">
+              <label>Adresa:</label>
+              <span>{{ workspace.address }}</span>
+            </div>
+            <div class="info-row">
+              <label>Broj stolova u otvorenom prostoru:</label>
+              <span>{{ workspace.capacity }}</span>
+            </div>
+            <div class="info-row">
+              <label>Cena po satu:</label>
+              <span>{{ workspace.pricePerHour }} RSD</span>
+            </div>
+            @if (user)
+            {
+                <div class="info-row">
+                    <label>Opis:</label>
+                    <span>{{ workspace.description }}</span>
+                </div>
+            }
+            <div class="info-row">
+              <label>Sviđanja:</label>
+              <span>{{ getLikeCount() }}</span>
+            </div>
+            <div class="info-row">
+              <label>Nesviđanja:</label>
+              <span>{{ getDislikeCount() }}</span>
+            </div>
+            <div class="info-row">
+              <label>Firma:</label>
+              <span>{{ firm?.name }}</span>
+            </div>
+            <div class="info-row">
+              <label>Menadžeri:</label>
+              @for (m of managers; track m.username)
+              {
+                <span>{{ m.username + ': ' + m.firstName + ' ' + m.lastName }}</span>
+              }
+            </div>
+            @if (user && user.role === 'manager')
+            {
+                <div class="info-row">
+                    <label>Status:</label>
+                    <span class="status" [ngClass]="'status-' + (workspace.status || 'pending')">
+                        {{ workspace.status === 'pending' ? 'Na čekanju' : workspace.status === 'approved' ? 'Odobren' : workspace.status }}
+                    </span>
+                </div>
+            }
+          </div>
+          @if (user && user.role === 'user')
+          {
+            <div class="map-section">
+              <h3>Lokacija radnog prostora</h3>
+              <div class="map-container" #mapContainer></div>
+            </div>
+          }
+        </div>
+
+        <h3>Privatni radni prostori</h3>
+        @if (workspace.privateSpaces.length > 0)
+        {
+            @for (privateSpace of workspace.privateSpaces; track privateSpace.spaceName)
+            {
+                <div class="private-space-container">
+                    <app-private-space-view [inputPrivateSpace]="privateSpace" [isEditing]="false" [workspaceName]="workspace.name"></app-private-space-view>
+                </div>
+            }
+        }
+        @else 
+        {
+            <p class="no-items">Nema privatnih radnih prostora.</p>
+        }
+      </div>
+    }
+
+    <!-- Edit Mode -->
+    @if (isEditing && editingWorkspace) {
+        <div class="view-panel-content">
+            <div class="workspace-edit">
+                <div class="messages">
+                    @if (successMessage) {
+                        <div class="success-message">{{ successMessage }}</div>
+                    }
+                    @if (errorMessage) {
+                        <div class="error-message">{{ errorMessage }}</div>
+                    }
+                </div>
+
+            <form (ngSubmit)="saveChanges()" class="workspace-form">
+                <div class="form-section">
+                    <h3>Informacije o radnom prostoru</h3>
+                    
+                    <div class="form-group">
+                        <label>Naziv:</label>
+                        <input type="text" [(ngModel)]="editingWorkspace.name" name="name" disabled>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Grad:</label>
+                        <input type="text" [(ngModel)]="editingWorkspace.city" name="city" [disabled]="loading">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Adresa:</label>
+                        <input type="text" [(ngModel)]="editingWorkspace.address" name="address" [disabled]="loading">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Broj stolova u otvorenom prostoru:</label>
+                        <input type="number" [(ngModel)]="editingWorkspace.capacity" name="capacity" [disabled]="loading">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Cena po satu (RSD):</label>
+                        <input type="number" [(ngModel)]="editingWorkspace.pricePerHour" name="pricePerHour" [disabled]="loading">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Opis:</label>
+                        <textarea [(ngModel)]="editingWorkspace.description" name="description" [disabled]="loading" rows="4"></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                        <label>Geografska širina (Latitude):</label>
+                        <input type="number" [(ngModel)]="editingWorkspace.lat" name="lat" [disabled]="loading" step="0.000001">
+                        </div>
+
+                        <div class="form-group">
+                        <label>Geografska dužina (Longitude):</label>
+                        <input type="number" [(ngModel)]="editingWorkspace.lon" name="lon" [disabled]="loading" step="0.000001">
+                        </div>
+                    </div>
+                    </div>
+
+                    <div class="form-actions">
+                    <button type="submit" class="btn btn-save" [disabled]="loading">
+                        Sačuvaj
+                    </button>
+                    <button type="button" class="btn btn-cancel" (click)="toggleEditMode()" [disabled]="loading">
+                        Otkaži
+                    </button>
+                </div>
+            </form>
+
+            <div class="form-section">
+                <h3>Privatni radni prostori</h3>
+                
+                @if (editingWorkspace.privateSpaces.length > 0)
+                {
+                    @for (privateSpace of editingWorkspace.privateSpaces; track privateSpace.spaceName)
+                    {
+                        <div class="private-space-edit-container">
+                            <app-private-space-view [inputPrivateSpace]="privateSpace" [isEditing]="true" [workspaceName]="workspace.name"></app-private-space-view>
+                        </div>
+                    }
+                }
+                @else 
+                {
+                    <p class="no-items">Nema privatnih radnih prostora.</p>
+                }
+
+                @if (!showAddNewPrivateSpace)
+                {
+                    <button type="button" class="btn btn-add" (click)="toggleAddNewPrivateSpace()" [disabled]="loading">
+                        + Dodaj novi privatni prostor
+                    </button>
+                }
+                @else
+                {
+                    <div class="add-new-private-space-form">
+                        <h4>Dodaj novi privatni prostor</h4>
+                        
+                        <div class="form-group">
+                            <label>Naziv prostora:</label>
+                            <input type="text" [(ngModel)]="newPrivateSpace!.spaceName" name="newSpaceName" placeholder="npr. Privatni kancelarijski prostor" [disabled]="loading">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Tip:</label>
+                            <select [(ngModel)]="newPrivateSpaceType" name="newSpaceType" (change)="onNewPrivateSpaceTypeChange()" [disabled]="loading">
+                                <option value="office">Kancelarija</option>
+                                <option value="conference">Konferencijska sala</option>
+                            </select>
+                        </div>
+
+                        @if (newPrivateSpaceType === 'office')
+                        {
+                            <div class="form-group">
+                                <label>Kapacitet:</label>
+                                <input type="number" [(ngModel)]="newPrivateSpace!.capacity" name="newSpaceCapacity" min="1" [disabled]="loading">
+                            </div>
+                        }
+                        @else if (newPrivateSpaceType === 'conference')
+                        {
+                            <div class="form-group">
+                                <label>Kapacitet:</label>
+                                <input type="number" [(ngModel)]="newPrivateSpace!.capacity" name="newSpaceCapacity" disabled value="10">
+                                <small>Konferencijske sale imaju fiksni kapacitet 10-12 osoba</small>
+                            </div>
+                        }
+
+                        <div class="form-group">
+                            <label>Cena po satu (RSD):</label>
+                            <input type="number" [(ngModel)]="newPrivateSpace!.pricePerHour" name="newSpacePrice" min="0" [disabled]="loading">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Opis:</label>
+                            <textarea [(ngModel)]="newPrivateSpace!.description" name="newSpaceDescription" [disabled]="loading" rows="3"></textarea>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-save" (click)="addNewPrivateSpace()" [disabled]="loading">
+                                Dodaj
+                            </button>
+                            <button type="button" class="btn btn-cancel" (click)="toggleAddNewPrivateSpace()" [disabled]="loading">
+                                Otkaži
+                            </button>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+      </div>
+    }
+  </div>
+}

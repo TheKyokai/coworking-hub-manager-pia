@@ -1,43 +1,55 @@
 /* Manager workspace view uses global reusable view-panel styles from styles.css */
 /* Global classes used: .view-panel-container, .view-panel-header, .view-panel-content */
 
-.empty-state {
-  padding: 40px 20px;
-  text-align: center;
-  color: #999;
+.view-panel-container {
   background-color: white;
   border-radius: 4px;
-  border: 1px solid #E8C1BC;
+  overflow: hidden;
+}
+
+
+.view-panel-content {
+  padding: 20px;
+}
+
+.empty-state {
+  padding: 60px 20px;
+  text-align: center;
+  color: #999;
+  font-size: 16px;
+  background-color: #fafafa;
 }
 
 .workspaces-list {
-  margin-top: 20px;
+  margin-top: 0;
 }
 
 .workspaces-table {
   width: 100%;
   border-collapse: collapse;
   background-color: white;
-  border-radius: 4px;
+  border-radius: 0;
   overflow: hidden;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: none;
 }
 
 .workspaces-table thead {
-  background-color: #F7E8E6;
+  background-color: #f9f6f4;
   border-bottom: 2px solid #E8C1BC;
 }
 
 .workspaces-table th {
-  padding: 14px 16px;
+  padding: 12px 15px;
   text-align: left;
   font-weight: 600;
-  color: #5C4240;
-  font-size: 14px;
+  color: #8B6B68;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
 }
 
 .workspaces-table td {
-  padding: 14px 16px;
+  padding: 12px 15px;
   border-bottom: 1px solid #E8C1BC;
   font-size: 14px;
   color: #5C4240;
@@ -51,6 +63,10 @@
   border-bottom: none;
 }
 
+.view-panel-content {
+  display: block;
+}
+
 /* Status Badges */
 .status {
   display: inline-block;
@@ -59,6 +75,7 @@
   font-size: 12px;
   font-weight: 600;
   text-transform: uppercase;
+  letter-spacing: 0.3px;
 }
 
 .status-pending {
@@ -76,7 +93,69 @@
   color: #8b3e37;
 }
 
+/* Button Styles */
+.btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.btn-view {
+  background-color: #D97B77;
+  color: white;
+}
+
+.btn-view:hover:not(:disabled) {
+  background-color: #c66864;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(217, 123, 119, 0.3);
+}
+
+.btn-view:active {
+  transform: translateY(0);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Table Actions Column */
+.workspaces-table td button {
+  margin: 0;
+}
+
+.loading {
+  padding: 60px 20px;
+  text-align: center;
+  color: #999;
+  font-size: 16px;
+  background-color: #fafafa;
+}
+
 /* Responsive Design */
+@media (max-width: 1024px) {
+  .workspaces-table th,
+  .workspaces-table td {
+    padding: 10px 12px;
+  }
+
+  .workspaces-table th {
+    font-size: 12px;
+  }
+
+  .btn-view {
+    font-size: 12px;
+    padding: 6px 12px;
+  }
+}
+
 @media (max-width: 768px) {
   .workspaces-table {
     font-size: 13px;
@@ -86,13 +165,98 @@
   .workspaces-table td {
     padding: 10px 8px;
   }
+
+  .workspaces-table th {
+    font-size: 11px;
+  }
+
+  .btn-view {
+    font-size: 11px;
+    padding: 5px 10px;
+  }
+
+  .status {
+    font-size: 11px;
+    padding: 5px 10px;
+  }
 }
 
-.loading {
-  padding: 40px 20px;
-  text-align: center;
-  color: #999;
-  background-color: white;
-  border-radius: 4px;
-  border: 1px solid #E8C1BC;
+@media (max-width: 480px) {
+  .workspaces-table {
+    font-size: 12px;
+  }
+
+  .workspaces-table th,
+  .workspaces-table td {
+    padding: 8px 6px;
+  }
+
+  .workspaces-table th {
+    font-size: 10px;
+  }
+
+  .btn-view {
+    font-size: 10px;
+    padding: 4px 8px;
+  }
+
+  .status {
+    font-size: 10px;
+    padding: 4px 8px;
+  }
+
+  .empty-state {
+    padding: 40px 16px;
+    font-size: 14px;
+  }
+
+  .loading {
+    padding: 40px 16px;
+    font-size: 14px;
+  }
+}
+
+
+.private-spaces-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  width: 100%;
+}
+
+.private-space-badge {
+  display: inline-block;
+  background-color: #E8C1BC;
+  color: #5C4240;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.no-data {
+  color: #ccc;
+}
+
+.name-cell {
+  font-weight: 600;
+  color: #5C4240;
+}
+
+.location-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.location-cell .city {
+  font-weight: 600;
+  color: #5C4240;
+  font-size: 14px;
+}
+
+.location-cell .address {
+  color: #8B6B68;
+  font-size: 12px;
 }

@@ -3,6 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import Workspace from '../../models/workspace';
 import { firstValueFrom } from 'rxjs';
 import Message from '../../models/message';
+import PrivateSpace from '../../models/private-space';
 
 @Injectable({
   providedIn: 'root',
@@ -74,5 +75,55 @@ export class WorkspaceService {
     }
   }
 
+  async updateWorkspace(workspace: Workspace)
+  {
+    try {
+      const response = await firstValueFrom(
+        this.http.post<Message>(
+          `${this.backUrl}/workspace/update`,
+          { workspace },
+          { observe: 'response'}
+        )
+      );
+      return response;
+    } catch (error) {
+      console.error("Failed to update workspace", error);
+      return error;
+    }
+  }
 
+  async addPrivateWorkspace(firmId:string, workspaceName:string, privateSpace: PrivateSpace)
+  {
+    try {
+      const response = await firstValueFrom(
+        this.http.post<Message>(
+          `${this.backUrl}/workspace/add-private`,
+          { firmId, workspaceName, ...privateSpace },
+          { observe: 'response'}
+        )
+      );
+      return response;
+    } catch (error) {
+      console.error("Failed to add private workspaces", error);
+      return error;
+    }
+  }
+
+  async updatePrivateWorkspace(firmId: string, workspaceName: string, privateSpace: PrivateSpace)
+  {
+    try {
+      const response = await firstValueFrom(
+        this.http.post<Message>(
+          `${this.backUrl}/workspace/update-private`,
+          { firmId, workspaceName, spaceName: privateSpace.spaceName, newDescription: privateSpace.description, 
+            newCapacity: privateSpace.capacity, newPricePerHour: privateSpace.pricePerHour, newType: privateSpace.type },
+          { observe: 'response'}
+        )
+      );
+      return response;
+    } catch (error) {
+      console.error("Failed to add private workspaces", error);
+      return error;
+    }
+  }
 }

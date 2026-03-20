@@ -8,5 +8,6 @@ export default class PrivateSpace
     
     type = "" // office/conference
     capacity = 0 // predefined for conference 10-12
+    pricePerHour = 0.0
     description = ""
 }

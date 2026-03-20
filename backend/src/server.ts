@@ -8,6 +8,8 @@ import mongoose from 'mongoose'
 import userRouter from './routers/user-router'
 import adminRouter from './routers/admin-router'
 import workspaceRouter from './routers/workspace-router'
+import firmRouter from './routers/firm-router'
+import reservationRouter from './routers/reservation-router'
 
 
 // Initial base setup
@@ -27,6 +29,8 @@ app.use('/images', express.static(path.join(__dirname, "../images")));
 app.use('/user', userRouter);
 app.use('/admin', adminRouter);
 app.use('/workspace', workspaceRouter);
+app.use('/firm', firmRouter);
+app.use('/reservation', reservationRouter);
 
 
 // Default route just in case for testing 

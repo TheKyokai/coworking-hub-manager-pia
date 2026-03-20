@@ -1,0 +1,177 @@
+<div class="browse-container">
+  <div class="browse-panel-container">
+    <div class="browse-panel-header">
+      <h2>Pretraži radne prostore</h2>
+    </div>
+
+    <!-- Filters Section -->
+    <div class="filters-section">
+      <div class="filter-group">
+        <label for="searchInput">Pretraga po nazivu:</label>
+        <input
+          id="searchInput"
+          type="text"
+          [(ngModel)]="searchName"
+          (input)="onSearchChange()"
+          placeholder="Unesite naziv radnog prostora..."
+          class="search-input"
+        />
+      </div>
+
+      <div class="filter-group cities-group">
+        <label>Gradovi:</label>
+        <div class="custom-dropdown">
+          <button type="button" class="dropdown-toggle" (click)="toggleCityDropdown()">
+            <span>
+              @if (selectedCities.length === 0) {
+                Izaberite grad...
+              } @else if (selectedCities.length === 1) {
+                {{ selectedCities[0] }}
+              } @else {
+                Više gradova
+              }
+            </span>
+            <span class="dropdown-arrow">▼</span>
+          </button>
+          @if (showCitiesDropdown) {
+            <div class="dropdown-menu">
+              @for (city of cities; track city) {
+                <div class="dropdown-item">
+                  <label class="checkbox-label">
+                    <input
+                      type="checkbox"
+                      [checked]="isCitySelected(city)"
+                      (change)="toggleCity(city)"
+                      class="dropdown-checkbox"
+                    />
+                    {{ city }}
+                  </label>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      </div>
+      
+      @if (user && user.role === 'user')
+      {
+        <div class="filter-group checkbox-group">
+          <label>Tip prostora:</label>
+          <div class="checkbox-options">
+            <label class="checkbox-option">
+              <input 
+                type="checkbox" 
+                name="open-space" 
+                id="open-space" 
+                [checked]="selectedCheckbox === 'open-space'"
+                [disabled]="checkboxDisabled('open-space')" 
+                (change)="selectCheckbox('open-space')"
+              />
+              Sto u otvorenom prostoru
+            </label>
+            <label class="checkbox-option">
+              <input 
+                type="checkbox" 
+                name="office" 
+                id="office" 
+                [checked]="selectedCheckbox === 'office'"
+                [disabled]="checkboxDisabled('office')" 
+                (change)="selectCheckbox('office')"
+              />
+              Kancelarija
+            </label>
+            <label class="checkbox-option">
+              <input 
+                type="checkbox" 
+                name="conference" 
+                id="conference" 
+                [checked]="selectedCheckbox === 'conference'"
+                [disabled]="checkboxDisabled('conference')" 
+                (change)="selectCheckbox('conference')"
+              />
+              Konferencijska sala
+            </label>
+          </div>
+        </div>
+        @if (selectedCheckbox === 'office')
+        {
+          <div class="filter-group">
+            <label for="office-cap">Minimalni kapacitet:</label>
+            <input 
+              type="number" 
+              id="office-cap" 
+              class="search-input" 
+              placeholder="Unesite kapacitet" 
+              min="0"
+              (input)="preventNegative($event)"
+              [(ngModel)]="officeCap"
+            />
+          </div>
+        }
+      }
+
+      <button type="button" class="btn btn-clear" (click)="clearFilters()">
+        Očisti filtere
+      </button>
+    </div>
+
+    <!-- Results Section -->
+    @if (filteredWorkspaces.length === 0) {
+      <div class="empty-state">
+        <p>Nema pronađenih radnih prostora.</p>
+      </div>
+    }
+
+    @if (filteredWorkspaces.length > 0) {
+      <div class="results-section">
+        <table class="workspaces-table">
+          <thead>
+            <tr>
+              <th class="sortable-header" (click)="sortByColumn('name')">
+                Naziv
+                <span class="sort-indicator" [class.active]="isSortable('name')">{{ getSortIndicator('name') }}</span>
+              </th>
+              <th class="sortable-header" (click)="sortByColumn('city')">
+                Lokacija
+                <span class="sort-indicator" [class.active]="isSortable('city')">{{ getSortIndicator('city') }}</span>
+              </th>
+              <th>Broj stolova</th>
+              <th>Privatni prostori</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (workspace of filteredWorkspaces; track workspace.firmId + '|' + workspace.name) {
+              <tr class="workspace-row">
+                <td class="name-cell">{{ workspace.name }}</td>
+                <td class="location-cell">
+                  <div class="city">{{ workspace.city }}</div>
+                  <div class="address">{{ workspace.address }}</div>
+                </td>
+                <td>{{ workspace.capacity }}</td>
+                <td class="private-spaces-cell">
+                  @if (workspace.privateSpaces && workspace.privateSpaces.length > 0) 
+                  {
+                    <div class="private-spaces-list">
+                      @for (space of workspace.privateSpaces; track space.spaceName) {
+                        <span class="private-space-badge">{{ space.spaceName }}</span>
+                      }
+                    </div>
+                  }
+                  @else {
+                    <span class="no-data">-</span>
+                  }
+                </td>
+                <td class="actions-cell">
+                  <button type="button" class="btn-details" (click)="viewWorkspaceDetails(workspace)">
+                    Detalji
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+</div>

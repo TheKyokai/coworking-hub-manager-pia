@@ -1,0 +1,101 @@
+@if (privateSpace) {
+    <div class="private-space-container">
+        
+        <!-- View Mode -->
+        @if (!isEditing) 
+        {
+        <div class="space-view">
+            <div class="space-header">
+                <h5>{{ privateSpace.spaceName }}</h5>
+                <div class="space-type-badge" [ngClass]="'type-' + privateSpace.type">
+                    {{ privateSpace.type === 'office' ? 'Kancelarija' : 'Konferencijska sala' }}
+                </div>
+            </div>
+
+            <div class="space-info">
+                <div class="info-row">
+                    <label>Kapacitet:</label>
+                    <span>{{ privateSpace.type === 'office'? privateSpace.capacity : '10-12'}}</span>
+                </div>
+                <div class="info-row">
+                    <label>Cena po satu:</label>
+                    <span>{{ privateSpace.pricePerHour }} RSD</span>
+                </div>
+                @if (user)
+                {
+                    <div class="info-row">
+                        <label>Opis:</label>
+                        <span>{{ privateSpace.description }}</span>
+                    </div>
+                }
+            </div>
+        </div>
+        }
+
+        <!-- Edit Mode -->
+        @if (isEditing) 
+        {
+            <div class="space-edit">
+                <div class="messages">
+                    @if (successMessage) 
+                    {
+                        <div class="success-message">{{ successMessage }}</div>
+                    }
+                    @if (errorMessage) 
+                    {
+                        <div class="error-message">{{ errorMessage }}</div>
+                    }
+                </div>
+
+                @if (editingSpace) 
+                {
+                    <form (ngSubmit)="saveChanges()" class="space-form">
+                        <div class="form-section">
+                            <h4>Uredi privatni prostor</h4>
+                            
+                            <div class="form-group">
+                                <label>Naziv:</label>
+                                <input type="text" [(ngModel)]="editingSpace.spaceName" name="spaceName" disabled>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Tip:</label>
+                                <select [(ngModel)]="editingSpace.type" name="type" (ngModelChange)="onTypeChange()" [disabled]="loading">
+                                <option value="office">Kancelarija</option>
+                                <option value="conference">Konferencijska sala</option>
+                                </select>
+                            </div>
+
+                            @if (editingSpace.type === 'office') {
+                                <div class="form-group">
+                                <label>Kapacitet:</label>
+                                <input type="number" [(ngModel)]="editingSpace.capacity" name="capacity" [disabled]="loading">
+                                </div>
+                            } @else {
+                                <div class="info-text">
+                                    Konferencijske sale imaju fiksni kapacitet od 10-12 osoba
+                                </div>
+                            }
+
+                            <div class="form-group">
+                                <label>Cena po satu (RSD):</label>
+                                <input type="number" [(ngModel)]="editingSpace.pricePerHour" name="pricePerHour" [disabled]="loading">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Opis:</label>
+                                <textarea [(ngModel)]="editingSpace.description" name="description" [disabled]="loading" rows="3" maxlength="300"></textarea>
+                            </div>
+                            </div>
+
+                            <div class="form-actions">
+                            <button type="submit" class="btn btn-save" [disabled]="loading">
+                                Sačuvaj
+                            </button>
+                        </div>
+                    </form>
+                }
+            </div>
+        }
+    </div>
+}

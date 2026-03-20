@@ -59,8 +59,6 @@ userRouter.route('/all-users')
 
 userRouter.route('/get-by-username/:username')
 	.get(
-		authenticateJWT,
-		requireRoles("admin"),
 		userController.getByUsername
 	)
 

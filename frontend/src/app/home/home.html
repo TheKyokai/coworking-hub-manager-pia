@@ -1,2 +1,30 @@
-<h1>Home</h1>
+<div class="home-container">
+    <div class="stats-section">
+        <h2>Coworking Hub Manager sadrži čak {{workspaces.length}} registrovanih radnih prostora.</h2>
+    </div>
 
+    <div class="top-workspaces-section">
+        <h2>Najomiljenijih 5 prostora</h2>
+        <div class="top-workspaces-grid">
+            @for (ws of topWorkspaces; track ws.firmId + '|' + ws.name; let i = $index) {
+                <div class="workspace-card" (click)="onWorkspaceClick(ws)">
+                    <div class="card-rank">#{{ i + 1 }}</div>
+                    <div class="card-content">
+                        <h3>{{ ws.name }}</h3>
+                        <div class="workspace-meta">
+                            <span class="location">{{ ws.city }}</span>
+                        </div>
+                        <div class="card-footer">
+                            <span class="likes">Sviđanja: {{ getWorkspaceLikeCount(ws) }}</span>
+                            <span class="capacity">Kapacitet: {{ ws.capacity }}</span>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="browse-section">
+        <app-browse-workspaces></app-browse-workspaces>
+    </div>
+</div>

@@ -167,16 +167,7 @@ class AdminController
             });
 
             if (!workspaceData)
-                return res.status(404).json({ message: 'Radni prostor nije pronađen' });
-
-            // Delete workspace pictures if they exist
-            // if (workspaceData.pictures) 
-            //     workspaceData.pictures.forEach((picturePath: string) => {
-            //         const fullPath = path.join(process.cwd(), picturePath);
-            //         if (fs.existsSync(fullPath))
-            //             fs.unlinkSync(fullPath);
-            //     });
-            
+                return res.status(404).json({ message: 'Radni prostor nije pronađen' });            
 
             // Delete the workspace
             await workspace.deleteOne({ 

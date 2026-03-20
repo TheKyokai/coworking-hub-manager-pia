@@ -9,7 +9,7 @@ export default class Reservation
 
     username = ""
 
-    status = "" // realized / missed
+    status = "" // active/cancelled/realized/missed
     
     startDate = new Date()
     endDate = new Date()

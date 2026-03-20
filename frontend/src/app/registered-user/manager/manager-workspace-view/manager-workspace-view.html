@@ -4,47 +4,73 @@
   </div>
 }
 
-@if (!loading) {
+@if (!loading && !showDetails) {
   <div class="view-panel-container">
     <div class="view-panel-header">
       <h2>Radni prostori</h2>
     </div>
-    
-    @if (workspaces.length === 0) {
-      <div class="empty-state">
-        <p>Vaša firma nema registrovanih radnih prostora.</p>
-      </div>
-    }
+    <div class="view-panel-content">
+      @if (workspaces.length === 0) {
+        <div class="empty-state">
+          <p>Vaša firma nema registrovanih radnih prostora.</p>
+        </div>
+      }
 
-    @if (workspaces.length > 0) {
-      <div class="workspaces-list">
-        <table class="workspaces-table">
-          <thead>
-            <tr>
-              <th>Naziv</th>
-              <th>Grad</th>
-              <th>Broj stolova u otvorenom prostoru</th>
-              <th>Privatni prostori</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (workspace of workspaces; track workspace.firmId + workspace.name) {
-              <tr class="workspace-row">
-                <td>{{ workspace.name }}</td>
-                <td>{{ workspace.city }}</td>
-                <td>{{ workspace.capacity }}</td>
-                <td>{{ getPrivateSpacesDisplay(workspace.privateSpaces) }}</td>
-                <td>
-                  <span class="status" [ngClass]="'status-' + (workspace.status || 'pending')">
-                    {{ workspace.status === 'pending' ? 'Na čekanju' : workspace.status === 'approved' ? 'Odobren' : workspace.status }}
-                  </span>
-                </td>
+      @if (workspaces.length > 0) {
+        <div class="workspaces-list">
+          <table class="workspaces-table">
+            <thead>
+              <tr>
+                <th>Naziv</th>
+                <th>Grad</th>
+                <th>Broj stolova</th>
+                <th>Privatni prostori</th>
+                <th>Status</th>
+                <th></th>
               </tr>
-            }
-          </tbody>
-        </table>
-      </div>
-    }
+            </thead>
+            <tbody>
+              @for (workspace of workspaces; track workspace.firmId + '|' + workspace.name) {
+                <tr class="workspace-row">
+                  <td class="name-cell">{{ workspace.name }}</td>
+                  <td class="location-cell">
+                    <div class="city">{{ workspace.city }}</div>
+                    <div class="address">{{ workspace.address }}</div>
+                  </td>
+                  <td>{{ workspace.capacity }}</td>
+                  <td>
+                    @if (workspace.privateSpaces && workspace.privateSpaces.length > 0) 
+                    {
+                      <div class="private-spaces-list">
+                        @for (space of workspace.privateSpaces; track space.spaceName) {
+                          <span class="private-space-badge">{{ space.spaceName }}</span>
+                        }
+                      </div>
+                    }
+                    @else {
+                      <span class="no-data">-</span>
+                    }
+                  </td>
+                  <td>
+                    <span class="status" [ngClass]="'status-' + (workspace.status || 'pending')">
+                      {{ workspace.status === 'pending' ? 'Na čekanju' : workspace.status === 'approved' ? 'Odobren' : workspace.status }}
+                    </span>
+                  </td>
+                  <td>
+                    <button type="button" class="btn btn-view" (click)="showWorkspaceDetails(workspace)">
+                      Detalji
+                    </button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
   </div>
+}
+
+@if (!loading && showDetails && selectedWorkspace) {
+  <app-workspace-view [workspace]="selectedWorkspace" (back)="backToList()"></app-workspace-view>
 }

@@ -1,13 +1,16 @@
+import { Double } from "mongodb"
 import mongoose from "mongoose"
 
 const WorkspaceSchema = new mongoose.Schema({
     // Unique (firmId, name)
     firmId: String,
     name: String,
-    pricePerHour: Number,
+    pricePerHour: Double,
     capacity: Number,
     city: String,
     address: String,
+    lat: Double,
+    lon: Double,
     maximumViolations: Number,
     status: String,
     privateSpaces: Array,
@@ -18,20 +21,3 @@ const WorkspaceSchema = new mongoose.Schema({
 })
 
 export default mongoose.model('Workspace', WorkspaceSchema, "workspaces")
-
-// export default class PrivateSpace
-// {
-
-//     // Private space data
-
-//     // Unique (firmId, workspaceName, spaceName)
-//     firmId = "" 
-//     workspaceName = ""
-//     spaceName = "" 
-    
-//     status = "" // pending/approved/rejected
-
-//     type = "" // office/conference
-//     capacity = 0 // predefined for conference 10-12
-    
-// }

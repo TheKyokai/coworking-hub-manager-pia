@@ -4,10 +4,11 @@ import Workspace from '../../../models/workspace';
 import { WorkspaceService } from '../../../services/workspace-service/workspace-service';
 import { AuthService } from '../../../services/auth-service/auth-service';
 import User from '../../../models/user';
+import { WorkspaceView } from '../../../workspace-view/workspace-view';
 
 @Component({
   selector: 'app-manager-workspace-view',
-  imports: [CommonModule],
+  imports: [CommonModule, WorkspaceView],
   templateUrl: './manager-workspace-view.html',
   styleUrl: './manager-workspace-view.css',
 })
@@ -18,6 +19,8 @@ export class ManagerWorkspaceView implements OnInit {
   workspaces: Workspace[] = [];
   loading = false;
   currentUser: User | null = null;
+  selectedWorkspace: Workspace | null = null;
+  showDetails = false;
 
   ngOnInit()
   {
@@ -37,6 +40,8 @@ export class ManagerWorkspaceView implements OnInit {
     } finally {
       this.loading = false;
     }
+    console.log("Workspaces");
+    console.log(this.workspaces);
   }
 
   getPrivateSpacesDisplay(privateSpaces: any[] | undefined)
@@ -44,6 +49,19 @@ export class ManagerWorkspaceView implements OnInit {
     if (!privateSpaces || privateSpaces.length === 0) {
       return 'Nema privatnih prostora';
     }
-    return privateSpaces.map(space => `${space.name} (${space.type})`).join(', ');
+    return privateSpaces.map(space => `${space.spaceName} (${space.type})`).join('\n');
+  }
+
+  showWorkspaceDetails(workspace: Workspace)
+  {
+    this.selectedWorkspace = workspace;
+    this.showDetails = true;
+  }
+
+  backToList()
+  {
+    this.showDetails = false;
+    this.selectedWorkspace = null;
+    this.loadManagerWorkspaces();
   }
 }

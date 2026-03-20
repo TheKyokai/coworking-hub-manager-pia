@@ -5,10 +5,12 @@ import { ManagerWorkspaceView } from '../manager/manager-workspace-view/manager-
 import { ManagerWorkspaceRegistration } from '../manager/manager-workspace-registration/manager-workspace-registration';
 import { AuthService } from '../../services/auth-service/auth-service';
 import { Router } from '@angular/router';
+import { UserReservationView } from '../user/user-reservation-view/user-reservation-view';
+import { BrowseWorkspaces } from '../../browse-workspaces/browse-workspaces';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [Profile, ManagerReservationView, ManagerWorkspaceView, ManagerWorkspaceRegistration],
+  imports: [Profile, ManagerReservationView, ManagerWorkspaceView, ManagerWorkspaceRegistration, UserReservationView, BrowseWorkspaces],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
