@@ -143,6 +143,27 @@
           </div>
         </div>
 
+        <div class="form-section">
+          <h3>Uvoz iz JSON fajla</h3>
+
+          <div class="form-group">
+            <label for="jsonUpload">Izaberite JSON fajl:</label>
+            <input
+              type="file"
+              id="jsonUpload"
+              accept=".json,application/json"
+              (change)="onJsonFileSelected($event)"
+              [disabled]="loading"
+            >
+          </div>
+
+          @if (uploadedFileName)
+          {
+            <div class="json-file-name">Učitano: {{ uploadedFileName }}</div>
+          }
+        </div>
+
+
         <div class="form-actions">
           <button type="submit" class="btn btn-submit" [disabled]="loading">
             @if (loading) {

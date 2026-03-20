@@ -11,6 +11,8 @@ export default reservationRouter
 
 reservationRouter.route("/get-all")
     .get(
+        authenticateJWT,
+        requireRoles("user", "manager"),
         reservationController.getAllReservations
     )
 

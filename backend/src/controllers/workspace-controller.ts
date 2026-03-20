@@ -152,7 +152,7 @@ class WorkspaceController
             }
 
 
-            await workspace.updateOne({firmId: firmId, name: workspaceName}, {$push: {comments: {comment: comment, username: username}}});
+            await workspace.updateOne({firmId: firmId, name: workspaceName}, {$push: {comments: {comment: comment, username: username, datetime: new Date()}}});
         
             res.status(200).json({ message: 'Radni prostor je uspešno komentarisan' });
         } catch (err) {

@@ -21,7 +21,7 @@ class ReservationController
         try {
             const {firmId, workspaceName, type, privateSpaceName, username, startDate, endDate} = req.body;
 
-            if (!firmId || !workspaceName || !type || !privateSpaceName || !username || !startDate || !endDate)
+            if (!firmId || !workspaceName || !type || (type === 'private' && !privateSpaceName) || !username || !startDate || !endDate)
                 return res.status(400).json({message: "Nisu prosleđeni svi potrebni podaci"});
 
             
@@ -155,11 +155,8 @@ class ReservationController
 
             const TEN_MIN = 10 * 60 * 1000;
             const diff = now.getTime() - resStart.getTime();
-            
-            if (diff > TEN_MIN)
-                return res.status(400).json({message: "Kasno je za potvrdu rezervacije"});
 
-            if (diff < 0)
+            if (diff < TEN_MIN)
                 return res.status(400).json({message: "Rano je za potvrdu rezervacije"});
 
 
@@ -195,11 +192,8 @@ class ReservationController
 
             const TEN_MIN = 10 * 60 * 1000;
             const diff = now.getTime() - resStart.getTime();
-            
-            if (diff > TEN_MIN)
-                return res.status(400).json({message: "Kasno je za odjavu rezervacije"});
 
-            if (diff < 0)
+            if (diff < TEN_MIN)
                 return res.status(400).json({message: "Rano je za odjavu rezervacije"});
 
 

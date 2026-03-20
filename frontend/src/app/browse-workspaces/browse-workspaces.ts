@@ -151,8 +151,9 @@ export class BrowseWorkspaces implements OnInit{
 
   getSortIndicator(column: string): string
   {
-    if (this.sortColumn !== column) return '↕';
-    return this.sortDirection === 'asc' ? '▲' : '▼';
+    if (this.sortColumn !== column) 
+      return '↕';
+    return this.sortDirection === 'asc' ? '↑' : '↓';
   }
 
   isSortable(column: string): boolean

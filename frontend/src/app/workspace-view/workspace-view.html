@@ -40,6 +40,87 @@
     <!-- View Mode -->
     @if (!isEditing) {
       <div class="view-panel-content">
+        @if (user && user.role === 'user' && isReserving)
+        {
+            <div class="form-section" style="border-top: none; margin-top: 10px; padding-top: 0;">
+                <h3>Rezervacija</h3>
+
+                <div class="messages">
+                    @if (successMessage) {
+                        <div class="success-message">{{ successMessage }}</div>
+                    }
+                    @if (errorMessage) {
+                        <div class="error-message">{{ errorMessage }}</div>
+                    }
+                </div>
+
+                <form (ngSubmit)="submitReservation()" class="workspace-form">
+                    <div class="form-group">
+                        <label>Izaberite šta želite da rezervišete:</label>
+
+                        <label>
+                            <input
+                                type="checkbox"
+                                [ngModel]="reserveOpenSpace"
+                                (ngModelChange)="onOpenSpaceSelectionChange($event)"
+                                name="reserveOpenSpace"
+                                [disabled]="isOpenSpaceChoiceDisabled()"
+                            >
+                            Sto u otvorenom prostoru
+                        </label>
+
+                        @for (privateSpace of workspace.privateSpaces; track privateSpace.spaceName)
+                        {
+                            <label>
+                                <input
+                                    type="checkbox"
+                                    [ngModel]="selectedPrivateSpace === privateSpace.spaceName"
+                                    (ngModelChange)="onPrivateSpaceSelectionChange(privateSpace.spaceName, $event)"
+                                    [name]="'reserve-' + privateSpace.spaceName"
+                                    [disabled]="isPrivateSpaceChoiceDisabled(privateSpace.spaceName)"
+                                >
+                                {{ privateSpace.spaceName }} ({{ privateSpace.type === 'office'? 'kancelarija' : 'konferencijska sala' }})
+                            </label>
+                        }
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Dan rezervacije:</label>
+                            <input
+                                type="date"
+                                [(ngModel)]="reservationDay"
+                                name="reservationDay"
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label>Vreme početka:</label>
+                            <input
+                                type="time"
+                                [(ngModel)]="reservationStartTime"
+                                name="reservationStartTime"
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label>Vreme kraja:</label>
+                            <input
+                                type="time"
+                                [(ngModel)]="reservationEndTime"
+                                name="reservationEndTime"
+                            >
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-save" [disabled]="loading">
+                            Rezerviši
+                        </button>
+                    </div>
+                </form>
+            </div>
+        }
         <div class="workspace-details">
           <div class="workspace-info">
             <div class="info-row">
@@ -121,6 +202,8 @@
         {
             <p class="no-items">Nema privatnih radnih prostora.</p>
         }
+
+                
       </div>
     }
 

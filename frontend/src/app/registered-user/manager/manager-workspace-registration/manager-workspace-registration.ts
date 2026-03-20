@@ -21,6 +21,7 @@ export class ManagerWorkspaceRegistration implements OnInit{
   loading = false;
   successMessage = '';
   errorMessage = '';
+  uploadedFileName = '';
 
   user = new User();
 
@@ -55,6 +56,68 @@ export class ManagerWorkspaceRegistration implements OnInit{
       value = value.replace(/[-+]/g, '');
       input.value = value;
     }
+  }
+
+  async onJsonFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files && input.files.length > 0 ? input.files[0] : null;
+
+    if (!file) {
+      return;
+    }
+
+    if (!file.name.toLowerCase().endsWith('.json')) {
+      this.errorMessage = 'Dozvoljen je samo .json fajl.';
+      this.successMessage = '';
+      input.value = '';
+      return;
+    }
+
+    try {
+      const fileContent = await file.text();
+      const parsed = JSON.parse(fileContent);
+
+      if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+        this.errorMessage = 'JSON sadržaj mora biti objekat.';
+        this.successMessage = '';
+        input.value = '';
+        return;
+      }
+
+      this.applyWorkspaceFromJson(parsed as Record<string, unknown>);
+      this.uploadedFileName = file.name;
+      this.successMessage = 'Podaci iz JSON fajla su učitani u formu.';
+      this.errorMessage = '';
+    } catch {
+      this.errorMessage = 'Neispravan JSON fajl.';
+      this.successMessage = '';
+      input.value = '';
+    }
+  }
+
+  private applyWorkspaceFromJson(data: Record<string, unknown>) {
+    const toNumber = (value: unknown, fallback: number): number => {
+      const num = Number(value);
+      return Number.isFinite(num) ? num : fallback;
+    };
+
+    if (typeof data['name'] === 'string')
+      this.workspace.name = data['name'].trim();
+
+    if (typeof data['description'] === 'string')
+      this.workspace.description = data['description'];
+
+    if (typeof data['address'] === 'string')
+      this.workspace.address = data['address'].trim();
+
+    if (typeof data['city'] === 'string')
+      this.workspace.city = data['city'].trim();
+
+    this.workspace.capacity = toNumber(data['capacity'], this.workspace.capacity);
+    this.workspace.pricePerHour = toNumber(data['pricePerHour'], this.workspace.pricePerHour);
+    this.workspace.maximumViolations = toNumber(data['maximumViolations'], this.workspace.maximumViolations);
+    this.workspace.lat = toNumber(data['lat'], this.workspace.lat);
+    this.workspace.lon = toNumber(data['lon'], this.workspace.lon);
   }
 
   async onSubmit() {
@@ -94,6 +157,7 @@ export class ManagerWorkspaceRegistration implements OnInit{
 
   onCancel() {
     this.workspace = new Workspace();
+    this.uploadedFileName = '';
     this.successMessage = '';
     this.errorMessage = '';
   }

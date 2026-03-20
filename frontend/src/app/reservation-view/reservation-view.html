@@ -1,0 +1,100 @@
+<div class="reservation-container">
+    <div class="reservation-panel-container">
+
+        @if (reservations.length === 0)
+        {
+            <div class="empty-state">
+                <p>Nema rezervacija.</p>
+            </div>
+        }
+        @else
+        {
+            <div class="results-section">
+                <table class="reservations-table">
+                    <thead>
+                        <tr>
+                            <th class="sortable-header" (click)="sortByColumn('name')">
+                                Naziv
+                                <span class="sort-indicator" [class.active]="isSortable('name')">{{ getSortIndicator('name') }}</span>
+                            </th>
+                            <th class="sortable-header" (click)="sortByColumn('city')">
+                                Lokacija
+                                <span class="sort-indicator" [class.active]="isSortable('city')">{{ getSortIndicator('city') }}</span>
+                            </th>
+                            <th class="sortable-header" (click)="sortByColumn('startDate')">
+                                Od
+                                <span class="sort-indicator" [class.active]="isSortable('startDate')">{{ getSortIndicator('startDate') }}</span>
+                            </th>
+                            <th class="sortable-header" (click)="sortByColumn('endDate')">
+                                Do
+                                <span class="sort-indicator" [class.active]="isSortable('endDate')">{{ getSortIndicator('endDate') }}</span>
+                            </th>
+                            <th>Status</th>
+                            @if (user && user.role === 'user')
+                            {
+                                <th></th>
+                            }
+                            @if (user && user.role === 'manager')
+                            {
+                                <th>Korisnik</th>
+                                <th></th>
+                                <th></th>
+                            }
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (res of reservations; 
+                            track res.firmId + '|' + res.workspaceName + '|' + res.type + '|' + res.privateSpaceName + '|' + res.username + '|' + res.startDate + '|' + res.reservationDate)
+                        {
+                            <tr>
+                                <td class="name-cell">
+                                    <div>{{ res.workspaceName }}</div>
+                                    @if (res.type === 'private')
+                                    {
+                                        <div class="private-space-name">{{ res.privateSpaceName }}</div>
+                                    }
+                                    @else 
+                                    {
+                                        <div class="private-space-name">Sto u otvorenom prostoru</div>
+                                    }
+                                </td>
+
+                                <td class="location-cell">
+                                    <div class="city">{{ res.ws?.city }}</div>
+                                    <div class="address">{{ res.ws?.address }}</div>
+                                </td>
+
+                                <td class="date-cell">{{ res.startDate | date:'dd.MM.yyyy HH:mm' }}</td>
+                                <td class="date-cell">{{ res.endDate | date:'dd.MM.yyyy HH:mm' }}</td>
+
+                                <td>
+                                    <span class="status-badge" [ngClass]="'status-' + res.status">
+                                        {{ getStatusDisplay(res.status) }}
+                                    </span>
+                                </td>
+
+                                @if (user && user.role === 'user')
+                                {
+                                    <td class="actions-cell">
+                                        <button type="button" class="btn-action btn-cancel" (click)="cancelReservation(res)" [disabled]="!canCancel(res)">Otkaži</button>
+                                    </td>
+                                }
+
+                                @if (user && user.role === 'manager')
+                                {   
+                                    <td>{{ res.username }}</td>
+                                    <td class="actions-cell">
+                                        <button type="button" class="btn-action btn-confirm" (click)="confirmReservation(res)" [disabled]="!canConfirmOrDecline(res)">Potvrdi</button>
+                                    </td>
+                                    <td class="actions-cell">
+                                        <button type="button" class="btn-action btn-decline" (click)="declineReservation(res)" [disabled]="!canConfirmOrDecline(res)">Odjavi</button>
+                                    </td>
+                                }
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>

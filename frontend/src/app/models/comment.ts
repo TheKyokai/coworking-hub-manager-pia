@@ -1,5 +1,6 @@
 export default class Comment
 {
     username = ""
-    content = "" 
+    content = ""
+    datetime = new Date()
 }

@@ -78,6 +78,12 @@
   cursor: not-allowed;
 }
 
+.json-file-name {
+  margin-top: 10px;
+  font-size: 13px;
+  color: #8B6B68;
+}
+
 .form-group textarea {
   padding: 10px 12px;
   border: 1px solid #E8C1BC;

@@ -11,6 +11,8 @@ import User from '../models/user';
 import Firm from '../models/firm';
 import { FirmService } from '../services/firm-service/firm-service';
 import { UserService } from '../services/user-service/user-service';
+import { ReservationService } from '../services/reservation-service/reservation-service';
+import Reservation from '../models/reservation';
 
 @Component({
   selector: 'app-workspace-view',
@@ -26,6 +28,7 @@ export class WorkspaceView implements OnChanges, AfterViewInit {
   private authService = inject(AuthService);
   private firmService = inject(FirmService);
   private userService = inject(UserService);
+  private reservationService = inject(ReservationService);
 
   editingWorkspace: Workspace | null = null;
   isEditing = false;
@@ -33,6 +36,12 @@ export class WorkspaceView implements OnChanges, AfterViewInit {
   loading = false;
   successMessage = '';
   errorMessage = '';
+
+  reserveOpenSpace = false;
+  selectedPrivateSpace = '';
+  reservationDay = '';
+  reservationStartTime = '';
+  reservationEndTime = '';
 
 
   showAddNewPrivateSpace = false;
@@ -50,6 +59,7 @@ export class WorkspaceView implements OnChanges, AfterViewInit {
     if (changes['workspace'] && this.workspace) {
       this.loadData();
       this.initializeMap();
+      this.resetReservationForm();
     }
   }
 
@@ -281,5 +291,133 @@ export class WorkspaceView implements OnChanges, AfterViewInit {
   toggleReservationMode()
   {
     this.isReserving = !this.isReserving;
+    this.successMessage = '';
+    this.errorMessage = '';
+
+    if (this.isReserving) {
+      this.resetReservationForm();
+    }
   }
+
+  onOpenSpaceSelectionChange(isSelected: boolean)
+  {
+    this.reserveOpenSpace = isSelected;
+    if (isSelected) {
+      this.selectedPrivateSpace = '';
+    }
+  }
+
+  onPrivateSpaceSelectionChange(spaceName: string, isSelected: boolean)
+  {
+    if (isSelected) {
+      this.selectedPrivateSpace = spaceName;
+      this.reserveOpenSpace = false;
+      return;
+    }
+
+    if (this.selectedPrivateSpace === spaceName) {
+      this.selectedPrivateSpace = '';
+    }
+  }
+
+  isOpenSpaceChoiceDisabled()
+  {
+    return this.loading || !!this.selectedPrivateSpace;
+  }
+
+  isPrivateSpaceChoiceDisabled(spaceName: string)
+  {
+    return this.loading || this.reserveOpenSpace || (!!this.selectedPrivateSpace && this.selectedPrivateSpace !== spaceName);
+  }
+
+  async submitReservation()
+  {
+    this.errorMessage = '';
+    this.successMessage = '';
+
+    if (!this.reserveOpenSpace && !this.selectedPrivateSpace) {
+      this.errorMessage = 'Izaberite šta želite da rezervišete.';
+      return;
+    }
+
+    if (!this.reservationDay || !this.reservationStartTime || !this.reservationEndTime) {
+      this.errorMessage = 'Izaberite datum i vreme početka/kraja rezervacije.';
+      return;
+    }
+
+    if (this.reservationStartTime >= this.reservationEndTime) {
+      this.errorMessage = 'Vreme početka mora biti pre vremena kraja.';
+      return;
+    }
+
+
+    // Parse day to Date object
+    const reservationDate = new Date(this.reservationDay);
+    if (!reservationDate) {
+      this.errorMessage = 'Neispravan format datuma.';
+      return;
+    }
+
+    // Check if selected day is not in the past
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (reservationDate < today) {
+      this.errorMessage = 'Dan rezervacije ne može biti u prošlosti.';
+      return;
+    }
+
+    // Create start and end Date objects
+    const startDateTime = this.combineDateAndTime(reservationDate, this.reservationStartTime);
+    const endDateTime = this.combineDateAndTime(reservationDate, this.reservationEndTime);
+
+    if (!startDateTime || !endDateTime) {
+      this.errorMessage = 'Neispravan format vremena.';
+      return;
+    }
+
+    const res: Reservation = {
+      firmId: this.workspace.firmId,
+      workspaceName: this.workspace.name,
+      type: this.reserveOpenSpace? 'open' : 'private',
+      privateSpaceName: this.reserveOpenSpace? '': this.selectedPrivateSpace,
+      startDate: startDateTime,
+      endDate: endDateTime,
+      username: this.user!.username,
+      status: 'active',
+      reservationDate: new Date(),
+      ws: new Workspace,
+    };
+    
+    console.log(res);
+    const response = await this.reservationService.makeReservation(res);
+    if (response.ok)
+      this.successMessage = response.message;
+    else
+      this.errorMessage = response.message;
+  }
+
+  private combineDateAndTime(date: Date, timeStr: string): Date | null
+  {
+    if (!timeStr) {
+      return null;
+    }
+    const [hours, minutes] = timeStr.split(':');
+    const h = parseInt(hours, 10);
+    const m = parseInt(minutes, 10);
+
+    const result = new Date(date);
+    result.setHours(h, m, 0, 0);
+    return result;
+  }
+
+  private resetReservationForm()
+  {
+    this.reserveOpenSpace = false;
+    this.selectedPrivateSpace = '';
+
+    this.reservationDay = '';
+    this.reservationStartTime = '';
+    this.reservationEndTime = '';
+  }
+
 }

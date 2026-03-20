@@ -1,18 +1,27 @@
 <header class="header">
   <div class="header-content">
     <div class="logo">
-      <a routerLink="" style="text-decoration: none;">
-        <h1>Coworking Hub Manager</h1>
-      </a>
+      @if (!loggedIn)
+      {
+        <a routerLink="" style="text-decoration: none;">
+          <h1>Coworking Hub Manager</h1>
+        </a>
+      }
+      @else
+      {
+        <a routerLink="dashboard" style="text-decoration: none;">
+          <h1>Coworking Hub Manager</h1>
+        </a>
+      }
     </div>
 
     <nav class="nav-links">
-      <a routerLink="" class="nav-link">Početna</a>
-
       @if (!loggedIn) {
+        <a routerLink="" class="nav-link">Početna</a>
         <a routerLink="login" class="nav-link nav-link-primary">Prijava</a>
         <a routerLink="registration" class="nav-link nav-link-primary">Registracija</a>
       } @else {
+        <a routerLink="dasboard" class="nav-link">Početna</a>
         <div class="user-section">
           <span class="user-name">{{ user?.firstName }} {{ user?.lastName }}</span>
           <button type="button" class="btn-logout" (click)="logout()">Odjava</button>

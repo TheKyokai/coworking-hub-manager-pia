@@ -81,7 +81,14 @@
       }
       @if (selectedTab === 'browse-workspaces') 
       {
-        <app-browse-workspaces></app-browse-workspaces>
+        <div class="view-panel-container">
+          <div class="view-panel-header">
+            <h2>Pretraga</h2>
+          </div>
+          <div class="view-panel-content" style="display: block;">
+            <app-browse-workspaces></app-browse-workspaces>
+          </div>
+        </div>
       }
 
     </div>

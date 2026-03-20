@@ -1,3 +1,5 @@
+import Workspace from "./workspace"
+
 export default class Reservation
 {
     // Reservation data
@@ -15,4 +17,5 @@ export default class Reservation
     endDate = new Date()
     reservationDate = new Date()
     
+    ws: Workspace = new Workspace() // Front only property
 }
