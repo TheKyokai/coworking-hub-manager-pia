@@ -1,6 +1,6 @@
 <div class="home-container">
     <div class="stats-section">
-        <h2>Coworking Hub Manager sadrži čak {{workspaces.length}} registrovanih radnih prostora.</h2>
+        <h2>Coworking Hub Manager sadrži čak {{workspaces.length}} registrovana radna prostora.</h2>
     </div>
 
     <div class="top-workspaces-section">
@@ -16,7 +16,7 @@
                         </div>
                         <div class="card-footer">
                             <span class="likes">Sviđanja: {{ getWorkspaceLikeCount(ws) }}</span>
-                            <span class="capacity">Kapacitet: {{ ws.capacity }}</span>
+                            <span class="capacity">Broj privatnih prostora: {{ ws.privateSpaces.length }}</span>
                         </div>
                     </div>
                 </div>

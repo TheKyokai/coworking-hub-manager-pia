@@ -32,7 +32,7 @@
           </thead>
           <tbody>
             @for (user of pendingRegistrations; track user.username) {
-              <tr class="request-row" (click)="showProfile(user)">
+              <tr class="request-row">
                 <td class="profile-pic">
                   @if (user.profilePicture) {
                     <img [src]="profilePictureSrc(user.profilePicture)" alt="Profil" class="thumbnail">

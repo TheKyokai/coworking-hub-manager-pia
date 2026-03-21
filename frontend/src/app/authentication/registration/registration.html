@@ -5,11 +5,7 @@
   
   <div class="view-panel-content registration-content">
     <div class="registration-form-wrapper">
-      <div class="messages">
-        @if (msg.message) {
-          <div class="error-message">{{ msg.message }}</div>
-        }
-      </div>
+      
 
       <form (ngSubmit)="submit()" #registrationForm="ngForm" class="registration-form">
         <div class="form-section">
@@ -253,6 +249,12 @@
           }
         </div>
 
+        <div class="messages">
+          @if (msg.message) 
+          {
+            <div class="error-message">{{ msg.message }}</div>
+          }
+        </div>
         <div class="form-actions">
           <button 
             type="submit" 

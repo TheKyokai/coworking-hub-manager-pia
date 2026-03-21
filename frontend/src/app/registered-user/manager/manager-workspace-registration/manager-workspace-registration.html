@@ -4,14 +4,7 @@
   </div>
   <div class="view-panel-content">
     <div class="workspace-form-wrapper">
-      <div class="messages">
-        @if (successMessage) {
-          <div class="success-message">{{ successMessage }}</div>
-        }
-        @if (errorMessage) {
-          <div class="error-message">{{ errorMessage }}</div>
-        }
-      </div>
+      
 
       <form (ngSubmit)="onSubmit()" class="workspace-form">
         <div class="form-section">
@@ -162,7 +155,16 @@
             <div class="json-file-name">Učitano: {{ uploadedFileName }}</div>
           }
         </div>
-
+        <div class="messages">
+          @if (successMessage) 
+          {
+            <div class="success-message">{{ successMessage }}</div>
+          }
+          @if (errorMessage) 
+          {
+            <div class="error-message">{{ errorMessage }}</div>
+          }
+        </div>
 
         <div class="form-actions">
           <button type="submit" class="btn btn-submit" [disabled]="loading">

@@ -42,6 +42,29 @@
               <label>Telefon:</label>
               <span>{{ user.phoneNumber }}</span>
             </div>
+            @if (firm)
+            {
+              <div class="info-row">
+                <label>Firma:</label>
+                <span>{{ firm.name }}</span>
+              </div>
+              <div class="info-row">
+                <label>Matični broj:</label>
+                <span>{{ firm.firmId }}</span>
+              </div>
+              <div class="info-row">
+                <label>PIB:</label>
+                <span>{{ firm.taxId }}</span>
+              </div>
+              <div class="info-row">
+                <label>Grad:</label>
+                <span>{{ firm.city }}</span>
+              </div>
+              <div class="info-row">
+                <label>Adresa:</label>
+                <span>{{ firm.address }}</span>
+              </div>
+            }
           </div>
         </div>
       }
@@ -165,7 +188,4 @@
       }
     </div>
   </div>
-} @else {
-  <br>
-  <span>Učitavanje...</span>
 }

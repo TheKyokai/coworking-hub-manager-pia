@@ -1,5 +1,6 @@
 import PrivateSpace from "./private-space"
 import Rating from "./rating"
+import Comment from "./comment"
 
 export default class Workspace
 {

@@ -3,6 +3,40 @@
     <h2>Upravljanje rezervacijama</h2>
   </div>
   <div class="view-panel-content">
-    <app-reservation-view></app-reservation-view>
+    <div class="filters-row">
+      <div class="filter-group">
+        <label for="workspaceSelect">Prostor:</label>
+        <select id="workspaceSelect" [(ngModel)]="selectedWorkspaceKey" (ngModelChange)="onWorkspaceChange()">
+          <option value="">Izaberite prostor</option>
+          @for (ws of workspaces; track ws.firmId + '|' + ws.name)
+          {
+            <option [value]="getWorkspaceKey(ws)">{{ ws.name }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="elementSelect">Element prostora:</label>
+        <select id="elementSelect" [(ngModel)]="selectedElementKey" (ngModelChange)="onElementChange()" [disabled]="!selectedWorkspaceKey">
+          <option value="">Izaberite element</option>
+          @for (opt of elementOptions; track opt.key)
+          {
+            <option [value]="opt.key">{{ opt.label }}</option>
+          }
+        </select>
+      </div>
+    </div>
+
+    @if (shouldShowCalendar())
+    {
+      <div class="calendar-wrapper">
+        <full-calendar [options]="calendarOptions"></full-calendar>
+      </div>
+    }
+
+    <app-reservation-view
+      [filterWorkspaceKey]="selectedWorkspaceKey"
+      [filterElementKey]="selectedElementKey"
+    ></app-reservation-view>
   </div>
 </div>

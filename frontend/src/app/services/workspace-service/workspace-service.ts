@@ -126,4 +126,39 @@ export class WorkspaceService {
       return error;
     }
   }
+
+  async commentOnWorkspace(firmId: string, workspaceName: string, username: string, comment: string)
+  {
+    try {
+      const response = await firstValueFrom(
+        this.http.post<Message>(
+          `${this.backUrl}/workspace/comment`,
+          { firmId, workspaceName, username, comment },
+          { observe: 'response'}
+        )
+      );
+      return response;
+    } catch (error) {
+      console.error("Failed to comment on workspace", error);
+      return error;
+    }
+  }
+
+  async rateWorkspace(firmId: string, workspaceName: string, username: string, ratingType: string)
+  {
+    try {
+      const response = await firstValueFrom(
+        this.http.post<Message>(
+          `${this.backUrl}/workspace/rate`,
+          { firmId, workspaceName, username, ratingType },
+          { observe: 'response'}
+        )
+      );
+      return response;
+    } catch (error) {
+      console.error("Failed to rate workspace", error);
+      return error;
+    }
+  }
+
 }

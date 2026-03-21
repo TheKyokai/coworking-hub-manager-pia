@@ -411,9 +411,167 @@
   background-color: #c0392b;
 }
 
+.btn-like {
+  background-color: #4f9a66;
+  color: #fff;
+}
+
+.btn-like:hover:not(:disabled) {
+  background-color: #3f7f53;
+}
+
+.btn-dislike {
+  background-color: #b85f5c;
+  color: #fff;
+}
+
+.btn-dislike:hover:not(:disabled) {
+  background-color: #9c4f4c;
+}
+
 .no-items {
   color: #999;
   font-style: italic;
   font-size: 13px;
   margin: 10px 0;
+}
+
+.reservation-calendar-wrapper {
+  margin: 8px 0 4px;
+  padding: 12px;
+  border: 1px solid #E8C1BC;
+  border-radius: 6px;
+  background-color: #fff;
+}
+
+.reservation-calendar-wrapper h4 {
+  margin: 0 0 10px 0;
+  color: #5C4240;
+  font-size: 14px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.workspace-feedback-section {
+  margin-top: 24px;
+  background-color: #fff;
+  border: 1px solid #E8C1BC;
+  border-radius: 6px;
+  padding: 16px;
+}
+
+.workspace-feedback-section h3 {
+  margin: 0 0 14px 0;
+  color: #5C4240;
+  font-size: 16px;
+}
+
+.workspace-feedback-actions {
+  margin-bottom: 18px;
+}
+
+.feedback-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.workspace-comments-list h4 {
+  margin: 0 0 10px 0;
+  color: #5C4240;
+  font-size: 14px;
+}
+
+.workspace-comment-item {
+  border: 1px solid #ecd8d5;
+  border-radius: 6px;
+  padding: 10px;
+  margin-bottom: 10px;
+  background-color: #fffaf9;
+}
+
+.workspace-comment-current-user {
+  outline: 1px dotted #D97B77;
+  outline-offset: 3px;
+}
+
+.workspace-comment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.workspace-comment-author {
+  color: #5C4240;
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.workspace-comment-time {
+  color: #8B6B68;
+  font-size: 12px;
+}
+
+.workspace-comment-text {
+  margin: 0;
+  color: #5C4240;
+  font-size: 14px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.private-space-switcher {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.private-space-switcher h4 {
+  margin: 0;
+  min-width: 240px;
+}
+
+.private-space-arrow {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border-radius: 50%;
+  background-color: #D97B77;
+  color: #fff;
+  font-size: 18px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.private-space-arrow:hover:not(:disabled) {
+  background-color: #B85F5C;
+}
+
+.form-group label input[type='radio'] {
+  margin-right: 8px;
+}
+
+:host ::ng-deep .fc {
+  font-size: 12px;
+}
+
+:host ::ng-deep .fc .fc-button {
+  background-color: #D97B77;
+  border-color: #B85F5C;
+}
+
+:host ::ng-deep .fc .fc-button:not(:disabled):hover {
+  background-color: #B85F5C;
+  border-color: #9C4F4C;
+}
+
+:host ::ng-deep .fc .fc-toolbar-title {
+  color: #5C4240;
+  font-size: 16px;
 }

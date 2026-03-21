@@ -46,6 +46,7 @@ class ReservationController
                 const existingReservation = await reservation.findOne({
                     firmId: firmId,
                     workspaceName: workspaceName,
+                    privateSpaceName: privateSpaceName,
                     status: 'active',
                     startDate: { $lt: end },
                     endDate: { $gt: start }
@@ -58,7 +59,6 @@ class ReservationController
                 const reservationCount = await reservation.countDocuments({
                     firmId: firmId,
                     workspaceName: workspaceName,
-                    privateSpaceName: privateSpaceName,
                     status: 'active',
                     startDate: { $lt: end },
                     endDate: { $gt: start }
@@ -102,7 +102,7 @@ class ReservationController
         try {
             const {firmId, workspaceName, type, privateSpaceName, username, startDate, endDate} = req.body;
 
-            if (!firmId || !workspaceName || !type || !privateSpaceName || !username || !startDate || !endDate)
+            if (!firmId || !workspaceName || !type || (type !== 'open' && !privateSpaceName) || !username || !startDate || !endDate)
                 return res.status(400).json({message: "Nisu prosleđeni svi potrebni podaci"});
 
 
@@ -136,7 +136,7 @@ class ReservationController
         try {
             const {firmId, workspaceName, type, privateSpaceName, username, startDate, endDate} = req.body;
 
-            if (!firmId || !workspaceName || !type || !privateSpaceName || !username || !startDate || !endDate)
+            if (!firmId || !workspaceName || !type || (type !== 'open' && !privateSpaceName) || !username || !startDate || !endDate)
                 return res.status(400).json({message: "Nisu prosleđeni svi potrebni podaci"});
 
 
@@ -173,7 +173,7 @@ class ReservationController
         try {
             const {firmId, workspaceName, type, privateSpaceName, username, startDate, endDate} = req.body;
 
-            if (!firmId || !workspaceName || !type || !privateSpaceName || !username || !startDate || !endDate)
+            if (!firmId || !workspaceName || !type || (type !== 'open' && !privateSpaceName) || !username || !startDate || !endDate)
                 return res.status(400).json({message: "Nisu prosleđeni svi potrebni podaci"});
 
 

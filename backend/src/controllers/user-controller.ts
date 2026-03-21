@@ -196,6 +196,11 @@ class UserController
             let firmDoc = await firm.findOne({ firmId: sentFirm.firmId });
             
             if (!firmDoc) {
+                firmDoc = await firm.findOne({ taxId: sentFirm.taxId });            
+
+                if (firmDoc)
+                    return res.status(500).json({ message: 'Neuspešna registracija. Podaci o firmi nisu važeći.' });
+
                 firmDoc = new firm({
                     firmId: sentFirm.firmId,
                     taxId: sentFirm.taxId,
@@ -207,12 +212,14 @@ class UserController
                 });
                 await firmDoc.save();
             } else {
+                if (firmDoc.taxId !== sentFirm.taxId)
+                    return res.status(500).json({ message: 'Neuspešna registracija. Podaci o firmi nisu važeći.' });
+
                 // Limit check
                 if (firmDoc.managers.length >= 2)
-                {
-                    res.status(500).json({ message: 'Neuspešna registracija. Firma već ima dva menadžera.' });
-                    return;
-                }
+                    return res.status(500).json({ message: 'Neuspešna registracija. Firma već ima dva menadžera.' });
+                    
+                
                 
                 // Add manager to existing firm
                 if (!firmDoc.managers.includes(sentUser.username)) {
@@ -220,6 +227,8 @@ class UserController
                     await firmDoc.save();
                 }
             }
+
+
             const passwordHash = await bcrypt.hash(password, 8);
             
             // Handle profile picture

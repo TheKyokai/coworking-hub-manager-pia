@@ -84,6 +84,8 @@ export class ManagerWorkspaceRegistration implements OnInit{
         return;
       }
 
+
+      // Upload successful => parse fields
       this.applyWorkspaceFromJson(parsed as Record<string, unknown>);
       this.uploadedFileName = file.name;
       this.successMessage = 'Podaci iz JSON fajla su učitani u formu.';
@@ -95,11 +97,14 @@ export class ManagerWorkspaceRegistration implements OnInit{
     }
   }
 
+  toNumber(value: unknown, fallback: number)
+  {
+    const num = Number(value);
+    return Number.isFinite(num) ? num : fallback;
+  };
+
+  // TODO: Simplify
   private applyWorkspaceFromJson(data: Record<string, unknown>) {
-    const toNumber = (value: unknown, fallback: number): number => {
-      const num = Number(value);
-      return Number.isFinite(num) ? num : fallback;
-    };
 
     if (typeof data['name'] === 'string')
       this.workspace.name = data['name'].trim();
@@ -113,11 +118,11 @@ export class ManagerWorkspaceRegistration implements OnInit{
     if (typeof data['city'] === 'string')
       this.workspace.city = data['city'].trim();
 
-    this.workspace.capacity = toNumber(data['capacity'], this.workspace.capacity);
-    this.workspace.pricePerHour = toNumber(data['pricePerHour'], this.workspace.pricePerHour);
-    this.workspace.maximumViolations = toNumber(data['maximumViolations'], this.workspace.maximumViolations);
-    this.workspace.lat = toNumber(data['lat'], this.workspace.lat);
-    this.workspace.lon = toNumber(data['lon'], this.workspace.lon);
+    this.workspace.capacity = this.toNumber(data['capacity'], this.workspace.capacity);
+    this.workspace.pricePerHour = this.toNumber(data['pricePerHour'], this.workspace.pricePerHour);
+    this.workspace.maximumViolations = this.toNumber(data['maximumViolations'], this.workspace.maximumViolations);
+    this.workspace.lat = this.toNumber(data['lat'], this.workspace.lat);
+    this.workspace.lon = this.toNumber(data['lon'], this.workspace.lon);
   }
 
   async onSubmit() {

@@ -124,7 +124,7 @@ class WorkspaceController
         }
     }
 
-    // TODO: Check commenting and rating 
+    
     commentWorkspace = async (req: express.Request, res: express.Response) =>
     {
         try {

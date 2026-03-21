@@ -5,6 +5,8 @@ import { FormsModule } from '@angular/forms';
 import User from '../../models/user';
 import Message from '../../models/message';
 import { UserService } from '../../services/user-service/user-service';
+import Firm from '../../models/firm';
+import { FirmService } from '../../services/firm-service/firm-service';
 
 @Component({
   selector: 'app-profile',
@@ -16,9 +18,11 @@ export class Profile implements OnInit, OnDestroy {
 
   private authService = inject(AuthService);
   private userService = inject(UserService);
+  private firmService = inject(FirmService);
   private router = inject(Router);
 
   user = new User();
+  firm: Firm | null = null;
   profilePictureSource = "";
   editingUser: User | null = null;
   isEditing = false;
@@ -63,6 +67,16 @@ export class Profile implements OnInit, OnDestroy {
     this.user = checkedUser;
     this.editingUser = { ...checkedUser };
     this.profilePictureSource = `http://localhost:4000/${this.user.profilePicture}?ts=${Date.now()}`;
+
+    if (this.user.firmId) {
+      try {
+        this.firm = await this.firmService.getFirm(this.user.firmId);
+      } catch {
+        this.firm = null;
+      }
+    } else {
+      this.firm = null;
+    }
   }
 
   onProfilePictureChange(event: any)

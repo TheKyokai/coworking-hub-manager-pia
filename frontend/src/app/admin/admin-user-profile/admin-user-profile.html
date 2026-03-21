@@ -55,6 +55,26 @@
                                 <label>Matični broj firme:</label>
                                 <span>{{ editingUser.firmId }}</span>
                             </div>
+                            <div class="info-row">
+                                <label>Naziv firme:</label>
+                                <span>{{ firm?.name }}</span>
+                            </div>
+                            <div class="info-row">
+                                <label>PIB firme:</label>
+                                <span>{{ firm?.taxId }}</span>
+                            </div>
+                            <div class="info-row">
+                                <label>Grad firme:</label>
+                                <span>{{ firm?.city }}</span>
+                            </div>
+                            <div class="info-row">
+                                <label>Adresa firme:</label>
+                                <span>{{ firm?.address }}</span>
+                            </div>
+                            <div class="info-row">
+                                <label>Status firme:</label>
+                                <span>{{ firm?.status }}</span>
+                            </div>
                         }
                     </div>
                 </div>
@@ -119,6 +139,26 @@
                                 <div class="form-group">
                                     <label>Matični broj firme:</label>
                                     <input type="text" [(ngModel)]="editingUser.firmId" name="firmId" [disabled]="loading">
+                                </div>
+                                <div class="form-group">
+                                    <label>Naziv firme:</label>
+                                    <input type="text" [value]="firm?.name || ''" disabled class="disabled-input">
+                                </div>
+                                <div class="form-group">
+                                    <label>PIB firme:</label>
+                                    <input type="text" [value]="firm?.taxId || ''" disabled class="disabled-input">
+                                </div>
+                                <div class="form-group">
+                                    <label>Grad firme:</label>
+                                    <input type="text" [value]="firm?.city || ''" disabled class="disabled-input">
+                                </div>
+                                <div class="form-group">
+                                    <label>Adresa firme:</label>
+                                    <input type="text" [value]="firm?.address || ''" disabled class="disabled-input">
+                                </div>
+                                <div class="form-group">
+                                    <label>Status firme:</label>
+                                    <input type="text" [value]="firm?.status || ''" disabled class="disabled-input">
                                 </div>
                             }
 

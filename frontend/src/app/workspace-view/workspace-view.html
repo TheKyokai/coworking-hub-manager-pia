@@ -29,7 +29,7 @@
                     @else 
                     {
                         <button type="button" class="btn btn-back" (click)="toggleReservationMode()" [disabled]="loading">
-                            Nazad
+                            Otkaži
                         </button>
                     }
                 }
@@ -45,52 +45,96 @@
             <div class="form-section" style="border-top: none; margin-top: 10px; padding-top: 0;">
                 <h3>Rezervacija</h3>
 
-                <div class="messages">
-                    @if (successMessage) {
-                        <div class="success-message">{{ successMessage }}</div>
-                    }
-                    @if (errorMessage) {
-                        <div class="error-message">{{ errorMessage }}</div>
-                    }
-                </div>
-
                 <form (ngSubmit)="submitReservation()" class="workspace-form">
                     <div class="form-group">
-                        <label>Izaberite šta želite da rezervišete:</label>
+                        <label>Izaberite tip prostora:</label>
 
                         <label>
                             <input
                                 type="checkbox"
-                                [ngModel]="reserveOpenSpace"
-                                (ngModelChange)="onOpenSpaceSelectionChange($event)"
-                                name="reserveOpenSpace"
-                                [disabled]="isOpenSpaceChoiceDisabled()"
+                                [ngModel]="isReservationTypeChecked('open')"
+                                (ngModelChange)="onReservationTypeCheckboxChange('open', $event)"
+                                name="reservationTypeOpen"
+                                [disabled]="isReservationTypeCheckboxDisabled('open')"
                             >
                             Sto u otvorenom prostoru
                         </label>
 
-                        @for (privateSpace of workspace.privateSpaces; track privateSpace.spaceName)
+                        <label>
+                            <input
+                                type="checkbox"
+                                [ngModel]="isReservationTypeChecked('office')"
+                                (ngModelChange)="onReservationTypeCheckboxChange('office', $event)"
+                                name="reservationTypeOffice"
+                                [disabled]="isReservationTypeCheckboxDisabled('office')"
+                            >
+                            Kancelarija
+                        </label>
+
+                        <label>
+                            <input
+                                type="checkbox"
+                                [ngModel]="isReservationTypeChecked('conference')"
+                                (ngModelChange)="onReservationTypeCheckboxChange('conference', $event)"
+                                name="reservationTypeConference"
+                                [disabled]="isReservationTypeCheckboxDisabled('conference')"
+                            >
+                            Konferencijska sala
+                        </label>
+                    </div>
+
+                    @if (hasAnySelectedReservationTarget())
+                    {
+                        <div class="reservation-calendar-wrapper">
+                            @if (selectedReservationType === 'open')
+                            {
+                                <h4>Sto u otvorenom prostoru</h4>
+                            }
+                            @else
+                            {
+                                <div class="private-space-switcher">
+                                    <button
+                                        type="button"
+                                        class="btn private-space-arrow"
+                                        (click)="goToPreviousPrivateSpace()"
+                                        [disabled]="!canNavigatePrivateSpaces()"
+                                    >
+                                        <
+                                    </button>
+                                    <h4>{{ getSelectedReservationLabel() }}</h4>
+                                    <button
+                                        type="button"
+                                        class="btn private-space-arrow"
+                                        (click)="goToNextPrivateSpace()"
+                                        [disabled]="!canNavigatePrivateSpaces()"
+                                    >
+                                        >
+                                    </button>
+                                </div>
+                            }
+
+                            <full-calendar [options]="calendarOptions"></full-calendar>
+                        </div>
+                    }
+
+                    <div class="messages">
+                        @if (successMessage) 
                         {
-                            <label>
-                                <input
-                                    type="checkbox"
-                                    [ngModel]="selectedPrivateSpace === privateSpace.spaceName"
-                                    (ngModelChange)="onPrivateSpaceSelectionChange(privateSpace.spaceName, $event)"
-                                    [name]="'reserve-' + privateSpace.spaceName"
-                                    [disabled]="isPrivateSpaceChoiceDisabled(privateSpace.spaceName)"
-                                >
-                                {{ privateSpace.spaceName }} ({{ privateSpace.type === 'office'? 'kancelarija' : 'konferencijska sala' }})
-                            </label>
+                            <div class="success-message">{{ successMessage }}</div>
+                        }
+                        @if (errorMessage) 
+                        {
+                            <div class="error-message">{{ errorMessage }}</div>
                         }
                     </div>
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Dan rezervacije:</label>
+                            <label>Dan rezervacije (izaberi klikom na kalendar):</label>
                             <input
-                                type="date"
-                                [(ngModel)]="reservationDay"
-                                name="reservationDay"
+                                type="text"
+                                [value]="getSelectedReservationDayLabel()"
+                                readonly
                             >
                         </div>
 
@@ -150,17 +194,36 @@
                     <span>{{ workspace.description }}</span>
                 </div>
             }
-            <div class="info-row">
-              <label>Sviđanja:</label>
-              <span>{{ getLikeCount() }}</span>
-            </div>
-            <div class="info-row">
-              <label>Nesviđanja:</label>
-              <span>{{ getDislikeCount() }}</span>
-            </div>
+            @if (user?.role === 'user' || user?.role === 'manager')
+            {
+                <div class="info-row">
+                    <label>Sviđanja:</label>
+                    <span>{{ getLikeCount() }}</span>
+                </div>
+                <div class="info-row">
+                    <label>Nesviđanja:</label>
+                    <span>{{ getDislikeCount() }}</span>
+                </div>
+            }
             <div class="info-row">
               <label>Firma:</label>
               <span>{{ firm?.name }}</span>
+            </div>
+            <div class="info-row">
+                <label>Matični broj firme:</label>
+                <span>{{ firm?.firmId }}</span>
+            </div>
+            <div class="info-row">
+                <label>PIB firme:</label>
+                <span>{{ firm?.taxId }}</span>
+            </div>
+            <div class="info-row">
+                <label>Grad firme:</label>
+                <span>{{ firm?.city }}</span>
+            </div>
+            <div class="info-row">
+                <label>Adresa firme:</label>
+                <span>{{ firm?.address }}</span>
             </div>
             <div class="info-row">
               <label>Menadžeri:</label>
@@ -187,6 +250,73 @@
             </div>
           }
         </div>
+
+        @if (user?.role === 'user' || user?.role === 'manager')
+        {
+            <div class="workspace-feedback-section">
+                <h3>Komentari</h3>
+
+                @if (user?.role === 'user')
+                {   
+                    <div class="messages">
+                        @if (successMessage) 
+                        {
+                            <div class="success-message">{{ successMessage }}</div>
+                        }
+                        @if (errorMessage) 
+                        {
+                            <div class="error-message">{{ errorMessage }}</div>
+                        }
+                    </div>
+
+                    <div class="workspace-feedback-actions">
+                        <div class="form-group">
+                            <label>Ostavite komentar:</label>
+                            <textarea
+                                [(ngModel)]="newCommentText"
+                                name="newCommentText"
+                                rows="3"
+                                [disabled]="loading"
+                                placeholder="Unesite komentar za radni prostor"
+                            ></textarea>
+                        </div>
+
+                        <div class="feedback-buttons">
+                            <button type="button" class="btn btn-save" (click)="submitWorkspaceComment()" [disabled]="loading">
+                                Ostavite komentar
+                            </button>
+                            <button type="button" class="btn btn-like" (click)="submitWorkspaceRating('like')" [disabled]="loading">
+                                Sviđa mi se
+                            </button>
+                            <button type="button" class="btn btn-dislike" (click)="submitWorkspaceRating('dislike')" [disabled]="loading">
+                                Ne sviđa mi se
+                            </button>
+                        </div>
+                    </div>
+                }
+
+                <div class="workspace-comments-list">
+                    <h4>Poslednjih 10 komentara</h4>
+                    @if (getLatestWorkspaceComments().length > 0)
+                    {
+                        @for (comment of getLatestWorkspaceComments(); track comment.username + '-' + comment.datetime)
+                        {
+                            <div class="workspace-comment-item" [class.workspace-comment-current-user]="isCurrentUserComment(comment)">
+                                <div class="workspace-comment-header">
+                                    <span class="workspace-comment-author">{{ comment.username }}</span>
+                                    <span class="workspace-comment-time">{{ formatWorkspaceCommentDate(comment.datetime) }}</span>
+                                </div>
+                                <p class="workspace-comment-text">{{ getWorkspaceCommentText(comment) }}</p>
+                            </div>
+                        }
+                    }
+                    @else
+                    {
+                        <p class="no-items">Još nema komentara za ovaj radni prostor.</p>
+                    }
+                </div>
+            </div>
+        }
 
         <h3>Privatni radni prostori</h3>
         @if (workspace.privateSpaces.length > 0)
@@ -329,7 +459,7 @@
                         {
                             <div class="form-group">
                                 <label>Kapacitet:</label>
-                                <input type="number" [(ngModel)]="newPrivateSpace!.capacity" name="newSpaceCapacity" disabled value="10">
+                                <input type="text" name="newSpaceCapacity" disabled value="10-12">
                                 <small>Konferencijske sale imaju fiksni kapacitet 10-12 osoba</small>
                             </div>
                         }

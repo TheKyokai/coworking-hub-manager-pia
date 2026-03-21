@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../services/auth-service/auth-service';
 import { ReservationService } from '../services/reservation-service/reservation-service';
@@ -14,6 +14,8 @@ import User from '../models/user';
   styleUrl: './reservation-view.css',
 })
 export class ReservationView implements OnInit{
+  @Input() filterWorkspaceKey = '';
+  @Input() filterElementKey = '';
 
   private authService = inject(AuthService);
   private reservationService = inject(ReservationService);
@@ -22,40 +24,82 @@ export class ReservationView implements OnInit{
 
   user: User | null = null;
   reservations: Reservation[] = [];
+  allReservations: Reservation[] = [];
   workspaces: Workspace[] = [];
   sortColumn: 'name' | 'city' | 'startDate' | 'endDate' = 'startDate';
   sortDirection: 'asc' | 'desc' = 'asc';
 
+  async ngOnChanges(changes: SimpleChanges)
+  {
+    if (changes['filterWorkspaceKey'] || changes['filterElementKey']) 
+      await this.applyFiltersAndSorting();
+    
+  }
+
 
   async ngOnInit()
+  {
+    await this.reloadData();
+    await this.applyFiltersAndSorting();
+  }
+
+  private async reloadData()
   {
     this.user = await this.authService.getUser();
     if (!this.user)
       return;
     if (this.user.role === 'user')
-      this.reservations = await this.reservationService.getUserReservations(this.user.username);
+      this.allReservations = await this.reservationService.getUserReservations(this.user.username);
     else 
     {
-      this.reservations = await this.reservationService.getFirmReservations(this.user.firmId);
-      this.reservations = this.reservations.filter(res => res.status === 'active');
+      this.allReservations = await this.reservationService.getFirmReservations(this.user.firmId);
+      this.allReservations = this.allReservations.filter(res => res.status === 'active');
     }
     this.workspaces = await this.workspaceService.getAllWorkspaces();
     
-    for (let res of this.reservations)
+    for (let res of this.allReservations)
     {
       const workSp = this.workspaces.find(ws => ws.firmId === res.firmId && ws.name === res.workspaceName);
       if (workSp)
         res.ws = workSp;
     }
+  }
 
+  async applyFiltersAndSorting()
+  {
+    let filtered = [...this.allReservations];
+
+    if (this.filterWorkspaceKey && this.filterElementKey)
+    {
+      // Showing all reservations if the calendar is open
+      filtered = await this.reservationService.getFirmReservations(this.user?.firmId!);
+    }
+
+    if (this.filterWorkspaceKey) 
+      filtered = filtered.filter(res => `${res.firmId}|${res.workspaceName}` === this.filterWorkspaceKey);
+    
+
+    if (this.filterElementKey) 
+    {
+      if (this.filterElementKey === 'open') 
+        filtered = filtered.filter(res => res.type === 'open');
+      else if (this.filterElementKey.startsWith('private:')) 
+      {
+        const privateSpaceName = this.filterElementKey.slice('private:'.length);
+        filtered = filtered.filter(res => res.type === 'private' && res.privateSpaceName === privateSpaceName);
+      }
+    }
+
+    this.reservations = filtered;
     this.applySorting();
   }
 
   sortByColumn(column: 'name' | 'city' | 'startDate' | 'endDate')
   {
-    if (this.sortColumn === column) {
+    if (this.sortColumn === column) 
       this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
-    } else {
+    else 
+    {
       this.sortColumn = column;
       this.sortDirection = 'asc';
     }
@@ -78,27 +122,29 @@ export class ReservationView implements OnInit{
   private applySorting()
   {
     this.reservations = [...this.reservations].sort((a, b) => {
-      const multiplier = this.sortDirection === 'asc' ? 1 : -1;
+      const direction = this.sortDirection === 'asc' ? 1 : -1;
 
-      if (this.sortColumn === 'name') {
-        return a.workspaceName.localeCompare(b.workspaceName) * multiplier;
-      }
+      if (this.sortColumn === 'name') 
+        return a.workspaceName.localeCompare(b.workspaceName) * direction;
+      
 
-      if (this.sortColumn === 'city') {
+      if (this.sortColumn === 'city') 
+      {
         const cityA = a.ws?.city || '';
         const cityB = b.ws?.city || '';
-        return cityA.localeCompare(cityB) * multiplier;
+        return cityA.localeCompare(cityB) * direction;
       }
 
-      if (this.sortColumn === 'startDate') {
+      if (this.sortColumn === 'startDate') 
+      {
         const startA = new Date(a.startDate).getTime();
         const startB = new Date(b.startDate).getTime();
-        return (startA - startB) * multiplier;
+        return (startA - startB) * direction;
       }
 
       const endA = new Date(a.endDate).getTime();
       const endB = new Date(b.endDate).getTime();
-      return (endA - endB) * multiplier;
+      return (endA - endB) * direction;
     });
   }
 
@@ -143,18 +189,21 @@ export class ReservationView implements OnInit{
   async cancelReservation(res: Reservation)
   {
     await this.reservationService.cancelReservation(res);
-    await this.ngOnInit();
+    await this.reloadData();
+    await this.applyFiltersAndSorting();
   } 
   
   async confirmReservation(res: Reservation)
   {
     await this.reservationService.confirmReservation(res);
-    await this.ngOnInit();
+    await this.reloadData();
+    await this.applyFiltersAndSorting();
   }
 
   async declineReservation(res: Reservation)
   {
     await this.reservationService.declineReservation(res);
-    await this.ngOnInit();
+    await this.reloadData();
+    await this.applyFiltersAndSorting();
   }
 }

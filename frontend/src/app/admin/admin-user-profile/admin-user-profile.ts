@@ -1,8 +1,10 @@
 import { Component, Input, Output, EventEmitter, inject, OnInit, OnDestroy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import User from '../../models/user';
+import Firm from '../../models/firm';
 import { AdminService } from '../../services/admin-service/admin-service';
 import { UserService } from '../../services/user-service/user-service';
+import { FirmService } from '../../services/firm-service/firm-service';
 import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
@@ -16,10 +18,12 @@ export class AdminUserProfile implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
   private adminService = inject(AdminService);
   private userService = inject(UserService);
+  private firmService = inject(FirmService);
   private router = inject(Router);
 
 
   editingUser: User | null = null;
+  firm: Firm | null = null;
   isEditing = false;
   loading = false;
   successMessage = '';
@@ -56,6 +60,16 @@ export class AdminUserProfile implements OnInit, OnDestroy {
   {
     this.editingUser = await this.userService.getUserByUsername(this.route.snapshot.paramMap.get('username') || '');
     this.profilePictureSrc = `http://localhost:4000/${this.editingUser!.profilePicture}?ts=${Date.now()}`;
+
+    if (this.editingUser?.role === 'manager' && this.editingUser.firmId) {
+      try {
+        this.firm = await this.firmService.getFirm(this.editingUser.firmId);
+      } catch {
+        this.firm = null;
+      }
+    } else {
+      this.firm = null;
+    }
   }
 
     toggleEditMode()

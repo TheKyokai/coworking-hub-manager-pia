@@ -65,8 +65,6 @@ export class BrowseWorkspaces implements OnInit{
       let matchesType = true;
       if (this.selectedCheckbox !== '')
       {
-        if (this.selectedCheckbox === 'open-space')
-          matchesType = ws.privateSpaces.length === 0;
         if (this.selectedCheckbox === 'office')
           matchesType = ws.privateSpaces.filter(ps => ps.type === 'office' && ps.capacity >= this.officeCap).length > 0;
         if (this.selectedCheckbox === 'conference')
@@ -163,6 +161,19 @@ export class BrowseWorkspaces implements OnInit{
 
   viewWorkspaceDetails(workspace: Workspace)
   {
+    if (this.selectedCheckbox !== '')
+    {
+      if (this.selectedCheckbox === 'open-space')
+        localStorage.setItem('searchedWorkspace', JSON.stringify({type: 'open', spaceName: ''}));
+      else
+      {
+        let meetsCriteria = workspace.privateSpaces.filter(ps => ps.type === this.selectedCheckbox);
+        if (this.selectedCheckbox === 'office')
+          meetsCriteria = meetsCriteria.filter(office => office.capacity >= this.officeCap).sort((a,b) => a.capacity - b.capacity);
+        if (meetsCriteria.length > 0)
+          localStorage.setItem('searchedWorkspace', JSON.stringify({type: this.selectedCheckbox, spaceName: meetsCriteria[0].spaceName, offices: meetsCriteria.map(ps => ps.spaceName)}));
+      }
+    }
     this.router.navigate(['/workspace', workspace.firmId, workspace.name]);
   }
 
