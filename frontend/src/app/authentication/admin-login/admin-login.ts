@@ -28,7 +28,7 @@ export class AdminLogin {
     this.authService.adminLogin(this.username, this.password).subscribe(
       response => {
         if (!response || !response.body) {
-          this.msg.message = "Nepredvidjena greska";
+          this.msg.message = "Neočekivana greska";
           this.loading = false;
           return;
         }
@@ -41,7 +41,7 @@ export class AdminLogin {
         this.loading = false;
       },
       error => {
-        this.msg.message = error?.error?.message || "Prijava neuspesna";
+        this.msg.message = error?.error?.message || "Prijava neuspešna";
         this.loading = false;
       }
     )

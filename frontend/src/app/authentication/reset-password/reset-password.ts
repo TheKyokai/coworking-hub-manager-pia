@@ -21,6 +21,7 @@ export class ResetPassword implements OnInit{
   passwordConfirm = '';
   msg = new Message();
   loading = false;
+  resetSuccessful = false;
 
   // Password validation flags
   passwordValidations = {
@@ -67,6 +68,8 @@ export class ResetPassword implements OnInit{
     this.loading = true;
     this.msg.message = '';
     this.msg = await this.authService.resetPassword(this.password, this.token);
+    this.resetSuccessful = this.msg.message.toLowerCase().includes('uspe')
+      && !this.msg.message.toLowerCase().includes('neuspe');
     this.loading = false;
   }
 

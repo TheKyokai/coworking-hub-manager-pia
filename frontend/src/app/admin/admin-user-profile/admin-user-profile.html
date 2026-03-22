@@ -48,7 +48,7 @@
                         </div>
                         <div class="info-row">
                             <label>Status:</label>
-                            <span>{{ editingUser.status }}</span>
+                            <span>{{ editingUser.status === 'approved' ? 'odobren' : 'na čekanju' }}</span>
                         </div>
                         @if (editingUser.role === 'manager' && editingUser.firmId) {
                             <div class="info-row">
@@ -73,7 +73,7 @@
                             </div>
                             <div class="info-row">
                                 <label>Status firme:</label>
-                                <span>{{ firm?.status }}</span>
+                                <span>{{ (firm?.status || '')  === 'approved' ? 'odobrena' : 'na čekanju' }}</span>
                             </div>
                         }
                     </div>
@@ -132,13 +132,13 @@
 
                             <div class="form-group">
                                 <label>Status:</label>
-                                <input type="text" [value]="editingUser.status" disabled class="disabled-input">
+                                <input type="text" [value]="editingUser.status === 'approved' ? 'odobren' : 'na čekanju'" disabled class="disabled-input">
                             </div>
 
                             @if (editingUser.role === 'manager' && editingUser.firmId) {
                                 <div class="form-group">
                                     <label>Matični broj firme:</label>
-                                    <input type="text" [(ngModel)]="editingUser.firmId" name="firmId" [disabled]="loading">
+                                    <input type="text" [(ngModel)]="editingUser.firmId" name="firmId" disabled>
                                 </div>
                                 <div class="form-group">
                                     <label>Naziv firme:</label>
@@ -158,7 +158,7 @@
                                 </div>
                                 <div class="form-group">
                                     <label>Status firme:</label>
-                                    <input type="text" [value]="firm?.status || ''" disabled class="disabled-input">
+                                    <input type="text" [value]="(firm?.status || '')  === 'approved' ? 'odobrena' : 'na čekanju'" disabled class="disabled-input">
                                 </div>
                             }
 

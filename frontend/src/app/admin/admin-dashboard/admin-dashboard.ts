@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { AdminRequestView } from './admin-request-view/admin-request-view';
 import { AdminUserView } from './admin-user-view/admin-user-view';
 import { AdminWorkspaceRequestView } from './admin-workspace-request-view/admin-workspace-request-view';
@@ -9,11 +9,19 @@ import { AdminWorkspaceRequestView } from './admin-workspace-request-view/admin-
   templateUrl: './admin-dashboard.html',
   styleUrl: './admin-dashboard.css',
 })
-export class AdminDashboard {
+export class AdminDashboard implements OnInit {
   activeTab: string = 'pending';
 
-  switchTab(tab: string)
+  ngOnInit()
+  {
+    const storedTab = localStorage.getItem('adminSelectedTab');
+    if (storedTab) 
+      this.activeTab = storedTab; 
+  }
+
+  selectTab(tab: string)
   {
     this.activeTab = tab;
+    localStorage.setItem('adminSelectedTab', tab);
   }
 }

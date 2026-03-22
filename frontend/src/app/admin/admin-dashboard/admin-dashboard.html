@@ -3,19 +3,19 @@
     <button 
       class="tab-button" 
       [class.active]="activeTab === 'pending'"
-      (click)="switchTab('pending')">
+      (click)="selectTab('pending')">
       Obrada zahteva za registraciju korisnika
     </button>
     <button 
       class="tab-button" 
       [class.active]="activeTab === 'workspaces'"
-      (click)="switchTab('workspaces')">
+      (click)="selectTab('workspaces')">
       Obrada zahteva za registraciju radnih prostora
     </button>
     <button 
       class="tab-button" 
       [class.active]="activeTab === 'users'"
-      (click)="switchTab('users')">
+      (click)="selectTab('users')">
       Upravljanje korisnicima
     </button>
   </div>

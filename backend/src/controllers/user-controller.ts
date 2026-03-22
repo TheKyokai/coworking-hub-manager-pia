@@ -18,47 +18,43 @@ class UserController
         const userData = await user.findOne({ username: username });
 
         if (userData == null)
-        {
-            res.status(400).json({
-                message: 'Login unsuccessful: User with that username does not exist',
+            return res.status(400).json({
+                message: 'Neuspešna prijava. Korisnik sa ovim korisničkim imenom ne postoji',
                 token: ''
             });
-            return;
-        }
 
-        // Compare password with hash
+        
+
+        
         const passwordMatch = await bcrypt.compare(password, userData.passwordHash!);
         if (!passwordMatch) 
-        {
-            res.status(400).json({
-                message: 'Login unsuccessful: Invalid credentials',
+            return res.status(400).json({
+                message: 'Neuspešna prijava. Neispravna lozinka',
                 token: ''
             });
-            return;
-        }
+            
+        
 
         if (userData.role == "admin")
-        {
-            res.status(400).json({
+            return res.status(400).json({
                 message: 'Neuspešna prijava. Zabranjen pristup',
                 token: ''
             });
-            return;
-        }
+            
+        
 
-        if (userData.status == "pending")
-        {
-            res.status(400).json({
-                message: 'Vaša registracija još uvek nije odobrena.'
+        if (userData.status == "pending")        
+            return res.status(400).json({
+                message: 'Neuspešna prijava. Vaša registracija još uvek nije odobrena.'
             });
-            return;
-        }
+            
+        
 
 
         const role = userData.role;
         const token = jwt.sign({ username, role }, JWT_KEY, { expiresIn: '2h' });
         res.status(200).json({
-            message: 'Login successful',
+            message: 'Uspešna prijava.',
             token: token
         });
     }
@@ -69,30 +65,29 @@ class UserController
         const userData = await user.findOne({ username: username });
 
         if (userData == null)
-        {
-            res.status(400).json({
-                message: 'Login unsuccessful: User with that username does not exist',
+            return res.status(400).json({
+                message: 'Neuspešna prijava. Korisnik sa ovim korisničkim imenom ne postoji',
                 token: ''
             });
-            return;
-        }
+            
+        
 
         // Admin check
         if (userData.role != 'admin')
         {
             res.status(400).json({
-                message: 'Login unsuccessful: User not authorized',
+                message: 'Neuspešna prijava. Zabranjen pristup',
                 token: ''
             });
             return;
         }
 
-        // Compare password with hash
+        
         const passwordMatch = await bcrypt.compare(password, userData.passwordHash!);
         if (!passwordMatch) 
         {
             res.status(400).json({
-                message: 'Login unsuccessful: Invalid credentials',
+                message: 'Neuspešna prijava. Neispravna lozinka',
                 token: ''
             });
             return;
@@ -100,7 +95,7 @@ class UserController
         const role = userData.role;
         const token = jwt.sign({ username, role }, JWT_KEY, { expiresIn: '2h' });
         res.status(200).json({
-            message: 'Login successful',
+            message: 'Uspešna prijava.',
             token: token
         });
     }
@@ -123,18 +118,18 @@ class UserController
 
             const sentUser = JSON.parse(userJSON);
 
-            if (sentUser.role !== 'user') {
-                return res.status(400).json({ message: 'Unexpected and invalid role registration' });
-            }
+            if (sentUser.role !== 'user') 
+                return res.status(400).json({ message: 'Neuspešna registracija. Neočekivana greška' });
+            
             // Check if user exists
             const existingUser = await user.findOne({ username: sentUser.username });
-            if (existingUser) {
-                return res.status(400).json({ message: 'Korisnik sa ovim korisničkim imenom postoji' });
-            }
+            if (existingUser) 
+                return res.status(400).json({ message: 'Neuspešna registracija. Korisnik sa ovim korisničkim imenom postoji' });
+            
             const existingEmail = await user.findOne({ email: sentUser.email });
-            if (existingEmail) {
-                return res.status(400).json({ message: 'Već postoji nalog koji je registrovan sa ovom e-mejl adresom' });
-            }
+            if (existingEmail) 
+                return res.status(400).json({ message: 'Neuspešna registracija. Već postoji nalog koji je registrovan sa ovom e-mejl adresom' });
+            
             const passwordHash = await bcrypt.hash(password, 8);
             
             // Handle profile picture
@@ -179,18 +174,18 @@ class UserController
 
             const sentUser = JSON.parse(userJSON);
 
-            if (sentUser.role !== 'manager') {
-                return res.status(400).json({ message: 'Unexpected and invalid role registration' });
-            }
+            if (sentUser.role !== 'manager') 
+                return res.status(400).json({ message: 'Neuspešna registracija. Neočekivana greška' });
+            
             // Check if user exists
             const existingUser = await user.findOne({ username: sentUser.username });
-            if (existingUser) {
-                return res.status(400).json({ message: 'Korisnik sa ovim korisničkim imenom postoji' });
-            }
+            if (existingUser) 
+                return res.status(400).json({ message: 'Neuspešna registracija. Korisnik sa ovim korisničkim imenom postoji' });
+            
             const existingEmail = await user.findOne({ email: sentUser.email });
-            if (existingEmail) {
-                return res.status(400).json({ message: 'Već postoji nalog koji je registrovan sa ovom e-mejl adresom' });
-            }
+            if (existingEmail) 
+                return res.status(400).json({ message: 'Neuspešna registracija. Već postoji nalog koji je registrovan sa ovom e-mejl adresom' });
+            
             // Check if firm exists
             const sentFirm = JSON.parse(firmJSON);
             let firmDoc = await firm.findOne({ firmId: sentFirm.firmId });

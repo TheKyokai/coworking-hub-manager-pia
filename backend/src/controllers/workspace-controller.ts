@@ -2,6 +2,8 @@ import express from 'express';
 import workspace from '../models/workspace';
 import firm from '../models/firm';
 import reservation from '../models/reservation';
+import path from 'path';
+import fs from 'fs';
 
 
 
@@ -39,7 +41,8 @@ class WorkspaceController
                 lon: sentWorkspace.lon,
                 status: 'pending',
                 comments: [],
-                ratings: []
+                ratings: [],
+                pictures: []
             });
             await newWorkspace.save();
             res.status(200).json({message: "Uspešno je poslat zahtev za registraciju radnog prostora"});
@@ -253,12 +256,83 @@ class WorkspaceController
     // TODO: Implement later
     uploadWorkspacePicture = async (req: express.Request, res: express.Response) =>
     {
+        try {
+            const { workspaceName, firmId } = req.body;
+
+            if (!workspaceName || !firmId)
+                return res.status(400).json({ message: 'Neophodno je poslati naziv radnog prostora i firmu.' });
+
+            if (!req.file)
+                return res.status(400).json({ message: 'Slika nije poslata.' });
+
+            const workspaceRecord = await workspace.findOne({ firmId: firmId, name: workspaceName });
+            if (!workspaceRecord) 
+            {
+                fs.unlinkSync(req.file.path);
+                return res.status(400).json({ message: 'Nije pronađen ovaj radni prostor' });
+            }
+
+            
+            if (workspaceRecord.pictures.length >= 6) 
+            {
+                fs.unlinkSync(req.file.path);
+                return res.status(400).json({ message: 'Maksimalan broj slika je 6. Možete samo obrisati postojeće slike.' });
+            }
+
+            const ext = path.extname(req.file.originalname) || '.png';
+            const safeFirmId = String(firmId).replace(/[^a-zA-Z0-9_-]/g, '_');
+            const safeWorkspaceName = String(workspaceName).replace(/[^a-zA-Z0-9_-]/g, '_');
+            const filename = `${safeFirmId}_${safeWorkspaceName}_${Date.now()}${ext}`;
+            const relativePath = path.join('images/workspace', filename);
+
+            fs.renameSync(req.file.path, relativePath);
+
+            await workspace.updateOne(
+                { firmId: firmId, name: workspaceName },
+                { $push: { pictures: relativePath } }
+            );
+
+            res.status(200).json({ message: 'Slika je uspešno dodata.' });
+        } catch (err) {
+            if (req.file && fs.existsSync(req.file.path))
+                fs.unlinkSync(req.file.path);
+            res.status(500).json({ message: 'Greška pri dodavanju slike radnog prostora.' });
+        }
 
     }
 
     deleteWorkspacePicture = async (req: express.Request, res: express.Response) =>
     {
+        try {
+            const { workspaceName, firmId, picturePath } = req.body;
 
+            if (!workspaceName || !firmId || !picturePath)
+                return res.status(400).json({ message: 'Neophodno je poslati naziv radnog prostora, firmu i putanju slike.' });
+
+            const workspaceRecord = await workspace.findOne({ firmId: firmId, name: workspaceName });
+            if (!workspaceRecord)
+                return res.status(400).json({ message: 'Nije pronađen ovaj radni prostor' });
+
+            
+            if (!workspaceRecord.pictures.includes(picturePath))
+                return res.status(400).json({ message: 'Slika nije pronađena za ovaj radni prostor.' });
+
+            await workspace.updateOne(
+                { firmId: firmId, name: workspaceName },
+                { $pull: { pictures: picturePath } }
+            );
+
+            if (picturePath.startsWith('images/workspace'))
+            {
+                const fullPath = path.join(process.cwd(), String(picturePath));
+                if (fs.existsSync(fullPath))
+                    fs.unlinkSync(fullPath);
+            }
+
+            res.status(200).json({ message: 'Slika je uspešno obrisana.' });
+        } catch (err) {
+            res.status(500).json({ message: 'Greška pri brisanju slike radnog prostora.' });
+        }
     }
 
 }

@@ -26,6 +26,12 @@
         (click)="selectTab('reservations')">
         Upravljanje rezervacijama
       </button>
+      <button 
+        class="tab-button" 
+        [class.active]="selectedTab === 'report'"
+        (click)="selectTab('report')">
+        Generisanje izveštaja
+      </button>
     </div>
 
     <div class="dashboard-content">
@@ -44,6 +50,10 @@
       @if (selectedTab === 'workspace-registration') 
       {
         <app-manager-workspace-registration></app-manager-workspace-registration>
+      }
+      @if (selectedTab === 'report') 
+      {
+        <app-manager-report-view></app-manager-report-view>
       }
     </div>
   } 

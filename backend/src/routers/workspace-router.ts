@@ -3,6 +3,7 @@ import { authenticateJWT } from '../middleware/auth'
 import { requireRoles } from '../middleware/role'
 import adminController from '../controllers/admin-controller'
 import workspaceController from '../controllers/workspace-controller'
+import { uploadWorkspace } from '../config/multer'
 
 const workspaceRouter = express.Router()
 export default workspaceRouter
@@ -73,4 +74,19 @@ workspaceRouter.route("/pending-workspaces")
 workspaceRouter.route("/get/:firmId/:workspaceName") // Potential role restriction
     .get(
         workspaceController.getWorkspace
+    )
+
+workspaceRouter.route('/upload-picture')
+    .post(
+        authenticateJWT,
+        requireRoles('manager'),
+        uploadWorkspace.single('workspacePicture'),
+        workspaceController.uploadWorkspacePicture
+    )
+
+workspaceRouter.route('/delete-picture')
+    .post(
+        authenticateJWT,
+        requireRoles('manager'),
+        workspaceController.deleteWorkspacePicture
     )

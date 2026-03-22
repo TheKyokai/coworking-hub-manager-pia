@@ -252,7 +252,11 @@
         <div class="messages">
           @if (msg.message) 
           {
-            <div class="error-message">{{ msg.message }}</div>
+            @if (isSuccessMessage()) {
+              <div class="success-message">{{ msg.message }}</div>
+            } @else {
+              <div class="error-message">{{ msg.message }}</div>
+            }
           }
         </div>
         <div class="form-actions">

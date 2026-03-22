@@ -161,4 +161,43 @@ export class WorkspaceService {
     }
   }
 
+  async uploadWorkspacePicture(firmId: string, workspaceName: string, workspacePicture: File)
+  {
+    try {
+      const formData = new FormData();
+      formData.append('firmId', firmId);
+      formData.append('workspaceName', workspaceName);
+      formData.append('workspacePicture', workspacePicture);
+
+      const response = await firstValueFrom(
+        this.http.post<Message>(
+          `${this.backUrl}/workspace/upload-picture`,
+          formData,
+          { observe: 'response' }
+        )
+      );
+      return response;
+    } catch (error) {
+      console.error('Failed to upload workspace picture', error);
+      return error;
+    }
+  }
+
+  async deleteWorkspacePicture(firmId: string, workspaceName: string, picturePath: string)
+  {
+    try {
+      const response = await firstValueFrom(
+        this.http.post<Message>(
+          `${this.backUrl}/workspace/delete-picture`,
+          { firmId, workspaceName, picturePath },
+          { observe: 'response' }
+        )
+      );
+      return response;
+    } catch (error) {
+      console.error('Failed to delete workspace picture', error);
+      return error;
+    }
+  }
+
 }

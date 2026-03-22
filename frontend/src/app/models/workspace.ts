@@ -26,4 +26,7 @@ export default class Workspace
     
     comments: Comment[] = []
     ratings: Rating[] = []
+    pictures: string[] = []
+
+    approvalDate: Date = new Date()
 }

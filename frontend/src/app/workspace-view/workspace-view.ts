@@ -101,6 +101,9 @@ export class WorkspaceView implements OnChanges, AfterViewInit {
   showAddNewPrivateSpace = false;
   newPrivateSpaceType = '';
   newPrivateSpace: PrivateSpace | null = null;
+  workspacePictureToUpload: File | null = null;
+  workspacePicturePreviewUrl = '';
+  selectedWorkspacePicturePath = '';
 
   user: User | null = null;
   firm: Firm | null = null;
@@ -112,6 +115,7 @@ export class WorkspaceView implements OnChanges, AfterViewInit {
   ngOnChanges(changes: SimpleChanges) 
   {
     if (changes['workspace'] && this.workspace) {
+      this.initializeSelectedWorkspacePicture();
       this.allowedOfficeNamesFromSearch = null;
       this.loadData();
       this.initializeMap();
@@ -192,8 +196,133 @@ export class WorkspaceView implements OnChanges, AfterViewInit {
     {
       this.isEditing = false;
       this.editingWorkspace = null;
+      this.workspacePictureToUpload = null;
+      this.clearWorkspacePicturePreview();
       this.successMessage = '';
       this.errorMessage = '';
+    }
+  }
+
+  private clearWorkspacePicturePreview()
+  {
+    if (this.workspacePicturePreviewUrl) {
+      URL.revokeObjectURL(this.workspacePicturePreviewUrl);
+      this.workspacePicturePreviewUrl = '';
+    }
+  }
+
+  getWorkspacePictureUrl(picturePath: string)
+  {
+    return `http://localhost:4000/${picturePath}`;
+  }
+
+  getMainWorkspacePicture()
+  {
+    const pictures = this.workspace.pictures || [];
+    if (pictures.length === 0)
+      return '';
+
+    if (this.selectedWorkspacePicturePath && pictures.includes(this.selectedWorkspacePicturePath))
+      return this.selectedWorkspacePicturePath;
+
+    return pictures[0];
+  }
+
+  getSmallWorkspacePictures()
+  {
+    const main = this.getMainWorkspacePicture();
+    return (this.workspace.pictures || [])
+      .filter(p => p !== main)
+      .slice(0, 5);
+  }
+
+  selectWorkspacePicture(picturePath: string)
+  {
+    this.selectedWorkspacePicturePath = picturePath;
+    this.setSelectedWorkspacePictureCookie(picturePath);
+  }
+
+  canAddWorkspacePicture()
+  {
+    return (this.workspace.pictures?.length || 0) < 6;
+  }
+
+  onWorkspacePictureSelected(event: any)
+  {
+    const file = event?.target?.files?.[0] as File | undefined;
+    this.clearWorkspacePicturePreview();
+    this.workspacePictureToUpload = file || null;
+
+    if (this.workspacePictureToUpload)
+      this.workspacePicturePreviewUrl = URL.createObjectURL(this.workspacePictureToUpload);
+  }
+
+  async uploadWorkspacePicture()
+  {
+    this.errorMessage = '';
+    this.successMessage = '';
+
+    if (!this.workspacePictureToUpload) {
+      this.errorMessage = 'Izaberite sliku za upload.';
+      return;
+    }
+
+    if (!this.canAddWorkspacePicture()) {
+      this.errorMessage = 'Maksimalan broj slika je 6. Možete samo obrisati postojeće slike.';
+      return;
+    }
+
+    this.loading = true;
+
+    try {
+      const response = await this.workspaceService.uploadWorkspacePicture(
+        this.workspace.firmId,
+        this.workspace.name,
+        this.workspacePictureToUpload
+      );
+
+      if (response && (response as any).ok) {
+        this.successMessage = (response as any).body?.message || 'Slika je uspešno dodata.';
+        this.workspacePictureToUpload = null;
+        this.clearWorkspacePicturePreview();
+        await this.reloadWorkspaceData();
+        if (!this.selectedWorkspacePicturePath && this.workspace.pictures.length > 0)
+          this.selectWorkspacePicture(this.workspace.pictures[0]);
+      } else {
+        this.errorMessage = (response as any)?.error?.message || 'Greška pri dodavanju slike.';
+      }
+    } catch (error) {
+      this.errorMessage = 'Greška pri dodavanju slike.';
+      console.error('Error uploading workspace picture:', error);
+    } finally {
+      this.loading = false;
+    }
+  }
+
+  async deleteWorkspacePicture(picturePath: string)
+  {
+    this.errorMessage = '';
+    this.successMessage = '';
+    this.loading = true;
+
+    try {
+      const response = await this.workspaceService.deleteWorkspacePicture(
+        this.workspace.firmId,
+        this.workspace.name,
+        picturePath
+      );
+
+      if (response && (response as any).ok) {
+        this.successMessage = (response as any).body?.message || 'Slika je uspešno obrisana.';
+        await this.reloadWorkspaceData();
+      } else {
+        this.errorMessage = (response as any)?.error?.message || 'Greška pri brisanju slike.';
+      }
+    } catch (error) {
+      this.errorMessage = 'Greška pri brisanju slike.';
+      console.error('Error deleting workspace picture:', error);
+    } finally {
+      this.loading = false;
     }
   }
 
@@ -453,6 +582,7 @@ export class WorkspaceView implements OnChanges, AfterViewInit {
     }
 
     this.workspace = reloadedWorkspace;
+    this.initializeSelectedWorkspacePicture();
     this.refreshPrivateSpaceTypeLists();
 
     if (this.isReserving && this.hasAnySelectedReservationTarget()) {
@@ -909,6 +1039,59 @@ export class WorkspaceView implements OnChanges, AfterViewInit {
       display: 'background',
       backgroundColor: '#f7d9d6',
     };
+  }
+
+  private initializeSelectedWorkspacePicture()
+  {
+    const pictures = this.workspace.pictures || [];
+
+    if (pictures.length === 0) {
+      this.selectedWorkspacePicturePath = '';
+      this.deleteSelectedWorkspacePictureCookie();
+      return;
+    }
+
+    const cookiePicture = this.getSelectedWorkspacePictureCookie();
+    if (cookiePicture && pictures.includes(cookiePicture)) {
+      this.selectedWorkspacePicturePath = cookiePicture;
+      return;
+    }
+
+    this.selectedWorkspacePicturePath = pictures[0];
+    this.setSelectedWorkspacePictureCookie(this.selectedWorkspacePicturePath);
+  }
+
+  private getWorkspacePictureCookieKey()
+  {
+    return `workspace_main_picture_${this.workspace.firmId}_${this.workspace.name}`;
+  }
+
+  private setSelectedWorkspacePictureCookie(picturePath: string)
+  {
+    const key = encodeURIComponent(this.getWorkspacePictureCookieKey());
+    const value = encodeURIComponent(picturePath);
+    document.cookie = `${key}=${value}; path=/; max-age=${60 * 60 * 24 * 365}`;
+  }
+
+  private getSelectedWorkspacePictureCookie()
+  {
+    const key = encodeURIComponent(this.getWorkspacePictureCookieKey());
+    const cookiePrefix = `${key}=`;
+    const cookie = document.cookie
+      .split(';')
+      .map(part => part.trim())
+      .find(part => part.startsWith(cookiePrefix));
+
+    if (!cookie)
+      return '';
+
+    return decodeURIComponent(cookie.substring(cookiePrefix.length));
+  }
+
+  private deleteSelectedWorkspacePictureCookie()
+  {
+    const key = encodeURIComponent(this.getWorkspacePictureCookieKey());
+    document.cookie = `${key}=; path=/; max-age=0`;
   }
 
 }

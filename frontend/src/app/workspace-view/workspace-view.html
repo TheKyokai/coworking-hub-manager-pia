@@ -166,82 +166,110 @@
             </div>
         }
         <div class="workspace-details">
-          <div class="workspace-info">
-            <div class="info-row">
-              <label>Naziv:</label>
-              <span style="font-weight: bold;">{{ workspace.name }}</span>
-            </div>
-            <div class="info-row">
-              <label>Grad:</label>
-              <span>{{ workspace.city }}</span>
-            </div>
-            <div class="info-row">
-              <label>Adresa:</label>
-              <span>{{ workspace.address }}</span>
-            </div>
-            <div class="info-row">
-              <label>Broj stolova u otvorenom prostoru:</label>
-              <span>{{ workspace.capacity }}</span>
-            </div>
-            <div class="info-row">
-              <label>Cena po satu:</label>
-              <span>{{ workspace.pricePerHour }} RSD</span>
-            </div>
-            @if (user)
-            {
-                <div class="info-row">
-                    <label>Opis:</label>
-                    <span>{{ workspace.description }}</span>
-                </div>
-            }
-            @if (user?.role === 'user' || user?.role === 'manager')
-            {
-                <div class="info-row">
-                    <label>Sviđanja:</label>
-                    <span>{{ getLikeCount() }}</span>
-                </div>
-                <div class="info-row">
-                    <label>Nesviđanja:</label>
-                    <span>{{ getDislikeCount() }}</span>
-                </div>
-            }
-            <div class="info-row">
-              <label>Firma:</label>
-              <span>{{ firm?.name }}</span>
-            </div>
-            <div class="info-row">
-                <label>Matični broj firme:</label>
-                <span>{{ firm?.firmId }}</span>
-            </div>
-            <div class="info-row">
-                <label>PIB firme:</label>
-                <span>{{ firm?.taxId }}</span>
-            </div>
-            <div class="info-row">
-                <label>Grad firme:</label>
-                <span>{{ firm?.city }}</span>
-            </div>
-            <div class="info-row">
-                <label>Adresa firme:</label>
-                <span>{{ firm?.address }}</span>
-            </div>
-            <div class="info-row">
-              <label>Menadžeri:</label>
-              @for (m of managers; track m.username)
-              {
-                <span>{{ m.username + ': ' + m.firstName + ' ' + m.lastName }}</span>
-              }
-            </div>
-            @if (user && user.role === 'manager')
-            {
-                <div class="info-row">
-                    <label>Status:</label>
-                    <span class="status" [ngClass]="'status-' + (workspace.status || 'pending')">
-                        {{ workspace.status === 'pending' ? 'Na čekanju' : workspace.status === 'approved' ? 'Odobren' : workspace.status }}
-                    </span>
-                </div>
-            }
+                    <div class="workspace-details-main">
+                        <div class="workspace-info">
+                            <div class="info-row">
+                                <label>Naziv:</label>
+                                <span style="font-weight: bold;">{{ workspace.name }}</span>
+                            </div>
+                            <div class="info-row">
+                                <label>Grad:</label>
+                                <span>{{ workspace.city }}</span>
+                            </div>
+                            <div class="info-row">
+                                <label>Adresa:</label>
+                                <span>{{ workspace.address }}</span>
+                            </div>
+                            <div class="info-row">
+                                <label>Broj stolova u otvorenom prostoru:</label>
+                                <span>{{ workspace.capacity }}</span>
+                            </div>
+                            <div class="info-row">
+                                <label>Cena po satu:</label>
+                                <span>{{ workspace.pricePerHour }} RSD</span>
+                            </div>
+                            @if (user?.role === 'user' || user?.role === 'manager')
+                            {
+                                    <div class="info-row">
+                                            <label>Sviđanja:</label>
+                                            <span>{{ getLikeCount() }}</span>
+                                    </div>
+                                    <div class="info-row">
+                                            <label>Nesviđanja:</label>
+                                            <span>{{ getDislikeCount() }}</span>
+                                    </div>
+                            }
+                            <div class="info-row">
+                                <label>Firma:</label>
+                                <span>{{ firm?.name }}</span>
+                            </div>
+                            <div class="info-row">
+                                    <label>Matični broj firme:</label>
+                                    <span>{{ firm?.firmId }}</span>
+                            </div>
+                            <div class="info-row">
+                                    <label>PIB firme:</label>
+                                    <span>{{ firm?.taxId }}</span>
+                            </div>
+                            <div class="info-row">
+                                    <label>Grad firme:</label>
+                                    <span>{{ firm?.city }}</span>
+                            </div>
+                            <div class="info-row">
+                                    <label>Adresa firme:</label>
+                                    <span>{{ firm?.address }}</span>
+                            </div>
+                            <div class="info-row">
+                                <label>Menadžeri:</label>
+                                <div class="managers-list">
+                                    @for (m of managers; track m.username)
+                                    {
+                                        <span class="manager-item">{{ m.username + ': ' + m.firstName + ' ' + m.lastName }}</span>
+                                    }
+                                </div>
+                            </div>
+                            @if (user && user.role === 'manager')
+                            {
+                                    <div class="info-row">
+                                            <label>Status:</label>
+                                            <span class="status" [ngClass]="'status-' + (workspace.status || 'pending')">
+                                                    {{ workspace.status === 'pending' ? 'Na čekanju' : workspace.status === 'approved' ? 'Odobren' : workspace.status }}
+                                            </span>
+                                    </div>
+                            }
+                        </div>
+
+                        <div class="workspace-gallery-column">
+                            @if ((workspace.pictures.length || 0) > 0)
+                            {
+                                    <div class="workspace-top-gallery">
+                                            <div class="workspace-main-picture">
+                                                    <img [src]="getWorkspacePictureUrl(getMainWorkspacePicture())" alt="Glavna slika radnog prostora">
+                                            </div>
+                                            <div class="workspace-small-pictures">
+                                                    @for (picturePath of getSmallWorkspacePictures(); track picturePath)
+                                                    {
+                                                            <button
+                                                                    type="button"
+                                                                    class="workspace-small-picture-btn"
+                                                                    (click)="selectWorkspacePicture(picturePath)"
+                                                            >
+                                                                    <img [src]="getWorkspacePictureUrl(picturePath)" alt="Sporedna slika radnog prostora">
+                                                            </button>
+                                                    }
+                                            </div>
+                                    </div>
+                            }
+                            @else
+                            {
+                                    @if (user && user.role === 'manager')
+                                    {
+                                            <p class="no-items">Nema slika za ovaj radni prostor.</p>
+                                    }
+                            }
+                        </div>
           </div>
+
           @if (user && user.role === 'user')
           {
             <div class="map-section">
@@ -250,6 +278,14 @@
             </div>
           }
         </div>
+
+                @if (user)
+                {
+                        <div class="workspace-description-section">
+                                <h3>Opis</h3>
+                                <p>{{ workspace.description }}</p>
+                        </div>
+                }
 
         @if (user?.role === 'user' || user?.role === 'manager')
         {
@@ -333,7 +369,6 @@
             <p class="no-items">Nema privatnih radnih prostora.</p>
         }
 
-                
       </div>
     }
 
@@ -349,6 +384,66 @@
                         <div class="error-message">{{ errorMessage }}</div>
                     }
                 </div>
+
+            <div class="form-section workspace-images-section-top">
+                <h3>Slike radnog prostora</h3>
+
+                @if ((workspace.pictures.length || 0) > 0)
+                {
+                    <div class="workspace-pictures-grid workspace-pictures-grid-edit">
+                        @for (picturePath of workspace.pictures; track picturePath)
+                        {
+                            <div class="workspace-picture-item workspace-picture-item-edit">
+                                <img [src]="getWorkspacePictureUrl(picturePath)" alt="Slika radnog prostora">
+                                <button
+                                    type="button"
+                                    class="btn btn-cancel workspace-picture-delete-btn"
+                                    (click)="deleteWorkspacePicture(picturePath)"
+                                    [disabled]="loading"
+                                >
+                                    Obriši
+                                </button>
+                            </div>
+                        }
+                    </div>
+                }
+                @else
+                {
+                    <p class="no-items">Nema slika za ovaj radni prostor.</p>
+                }
+
+                @if (canAddWorkspacePicture())
+                {
+                    <div class="workspace-picture-upload-row">
+                        <input
+                            type="file"
+                            accept="image/*"
+                            (change)="onWorkspacePictureSelected($event)"
+                            [disabled]="loading"
+                        >
+                        <button
+                            type="button"
+                            class="btn btn-save"
+                            (click)="uploadWorkspacePicture()"
+                            [disabled]="loading || !workspacePictureToUpload"
+                        >
+                            Dodaj sliku
+                        </button>
+                    </div>
+
+                    @if (workspacePicturePreviewUrl)
+                    {
+                        <div class="workspace-upload-preview">
+                            <p>Pregled slike:</p>
+                            <img [src]="workspacePicturePreviewUrl" alt="Pregled nove slike radnog prostora">
+                        </div>
+                    }
+                }
+                @else
+                {
+                    <p class="no-items">Dostignut je maksimalan broj od 6 slika. Moguće je samo brisanje postojećih slika.</p>
+                }
+            </div>
 
             <form (ngSubmit)="saveChanges()" class="workspace-form">
                 <div class="form-section">
@@ -485,6 +580,7 @@
                     </div>
                 }
             </div>
+
         </div>
       </div>
     }

@@ -17,7 +17,8 @@ const WorkspaceSchema = new mongoose.Schema({
     description: String,
     comments: Array,
     ratings: Array,
-    pictures: Array
+    pictures: Array,
+    approvalDate: Date
 })
 
 export default mongoose.model('Workspace', WorkspaceSchema, "workspaces")

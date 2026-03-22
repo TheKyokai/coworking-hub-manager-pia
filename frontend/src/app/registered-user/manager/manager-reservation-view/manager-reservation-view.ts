@@ -167,16 +167,18 @@ export class ManagerReservationView implements OnInit {
   private refreshCalendar()
   {
     const ws = this.getSelectedWorkspace();
-    if (!ws || !this.selectedElementKey) {
+    if (!ws || !this.selectedElementKey) 
+    {
       this.clearCalendar();
       return;
     }
 
     let filtered = this.reservations.filter(res => res.firmId === ws.firmId && res.workspaceName === ws.name);
 
-    if (this.selectedElementKey === 'open') {
+    if (this.selectedElementKey === 'open') 
       filtered = filtered.filter(res => res.type === 'open');
-    } else if (this.selectedElementKey.startsWith('private:')) {
+    else if (this.selectedElementKey.startsWith('private:')) 
+    {
       const privateSpaceName = this.selectedElementKey.slice('private:'.length);
       filtered = filtered.filter(res => res.type === 'private' && res.privateSpaceName === privateSpaceName);
     }
@@ -200,6 +202,16 @@ export class ManagerReservationView implements OnInit {
       ...this.calendarOptions,
       events: this.calendarEvents,
     };
+  }
+
+  async onReservationStatusChanged()
+  {
+    if (!this.user)
+      return;
+
+    const firmReservations = await this.reservationService.getFirmReservations(this.user.firmId);
+    this.reservations = firmReservations;
+    this.refreshCalendar();
   }
 
 }

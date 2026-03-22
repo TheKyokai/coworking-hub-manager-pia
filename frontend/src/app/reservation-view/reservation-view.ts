@@ -1,4 +1,4 @@
-import { Component, inject, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, inject, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../services/auth-service/auth-service';
 import { ReservationService } from '../services/reservation-service/reservation-service';
@@ -16,6 +16,7 @@ import User from '../models/user';
 export class ReservationView implements OnInit{
   @Input() filterWorkspaceKey = '';
   @Input() filterElementKey = '';
+  @Output() reservationStatusChanged = new EventEmitter<void>();
 
   private authService = inject(AuthService);
   private reservationService = inject(ReservationService);
@@ -191,6 +192,7 @@ export class ReservationView implements OnInit{
     await this.reservationService.cancelReservation(res);
     await this.reloadData();
     await this.applyFiltersAndSorting();
+    this.reservationStatusChanged.emit();
   } 
   
   async confirmReservation(res: Reservation)
@@ -198,6 +200,7 @@ export class ReservationView implements OnInit{
     await this.reservationService.confirmReservation(res);
     await this.reloadData();
     await this.applyFiltersAndSorting();
+    this.reservationStatusChanged.emit();
   }
 
   async declineReservation(res: Reservation)
@@ -205,5 +208,6 @@ export class ReservationView implements OnInit{
     await this.reservationService.declineReservation(res);
     await this.reloadData();
     await this.applyFiltersAndSorting();
+    this.reservationStatusChanged.emit();
   }
 }

@@ -1,0 +1,63 @@
+<div class="view-panel-container">
+	<div class="view-panel-header">
+		<h2>Generisanje izveštaja</h2>
+	</div>
+
+	<div class="view-panel-content">
+		<div class="report-filters">
+			<div class="filter-group">
+				<label for="reportMonth">Mesec:</label>
+				<select id="reportMonth" [(ngModel)]="selectedMonth" [disabled]="loading">
+					<option [ngValue]="null">Izaberite mesec</option>
+					@for (month of monthOptions; track month.value)
+					{
+						<option [ngValue]="month.value">{{ month.label }}</option>
+					}
+				</select>
+			</div>
+
+			<div class="filter-group">
+				<label for="reportYear">Godina:</label>
+				<input
+					type="number"
+					id="reportYear"
+					[(ngModel)]="selectedYear"
+					[disabled]="loading"
+					placeholder="Unesite godinu"
+					min="1"
+					step="1"
+				>
+			</div>
+
+			<div class="actions-group">
+				<button type="button" class="btn btn-generate" (click)="generateReport()" [disabled]="!canGenerateReport()">
+					Generiši izveštaj
+				</button>
+			</div>
+		</div>
+
+		<div class="messages">
+			@if (successMessage)
+			{
+				<div class="success-message">{{ successMessage }}</div>
+			}
+			@if (errorMessage)
+			{
+				<div class="error-message">{{ errorMessage }}</div>
+			}
+		</div>
+
+		@if (reportGenerated)
+		{
+			<div class="report-placeholder">
+				<h3>{{ reportSummary }}</h3>
+			</div>
+		}
+		@else
+		{
+			<div class="empty-state">
+				<p>Izaberite mesec i godinu, pa kliknite na dugme za generisanje izveštaja.</p>
+			</div>
+		}
+	</div>
+</div>

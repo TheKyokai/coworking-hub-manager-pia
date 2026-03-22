@@ -145,6 +145,7 @@ class AdminController
                 return res.status(404).json({ message: 'Radni prostor nije pronađen' });
 
             workspaceData.status = 'approved';
+            workspaceData.approvalDate = new Date();
             await workspaceData.save();
 
             res.status(200).json({ message: 'Radni prostor je uspešno odobren' });

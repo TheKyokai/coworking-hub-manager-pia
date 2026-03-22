@@ -414,6 +414,13 @@ html, body {
   border-bottom: 2px solid #E8C1BC;
 }
 
+.requests-table th,
+.users-table th {
+  padding: 12px;
+  text-align: center;
+  color: #5C4240;
+}
+
 .request-row,
 .user-row {
   border-bottom: 1px solid #E8C1BC;
@@ -429,6 +436,13 @@ html, body {
 .users-table td {
   padding: 12px;
   color: #5C4240;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.requests-table .actions,
+.users-table .actions {
+  justify-content: center;
 }
 
 /* ============================================

@@ -107,6 +107,12 @@ export class Registration implements OnInit, OnDestroy{
       URL.revokeObjectURL(this.img.src);
   }
 
+  isSuccessMessage()
+  {
+    const text = (this.msg.message || '').toLowerCase();
+    return text.includes('uspe') && !text.includes('neuspe');
+  }
+
   async submit() {
     this.loading = true;
     this.msg.message = '';

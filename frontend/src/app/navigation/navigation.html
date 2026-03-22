@@ -16,12 +16,15 @@
     </div>
 
     <nav class="nav-links">
-      @if (!loggedIn) {
+      @if (!loggedIn) 
+      {
         <a routerLink="" class="nav-link">Početna</a>
         <a routerLink="login" class="nav-link nav-link-primary">Prijava</a>
         <a routerLink="registration" class="nav-link nav-link-primary">Registracija</a>
-      } @else {
-        <a routerLink="dasboard" class="nav-link">Početna</a>
+      } 
+      @else 
+      {
+        <a routerLink="dashboard" class="nav-link">Početna</a>
         <div class="user-section">
           <span class="user-name">{{ user?.firstName }} {{ user?.lastName }}</span>
           <button type="button" class="btn-logout" (click)="logout()">Odjava</button>

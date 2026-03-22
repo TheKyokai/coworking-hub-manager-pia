@@ -7,10 +7,11 @@ import { AuthService } from '../../services/auth-service/auth-service';
 import { Router } from '@angular/router';
 import { UserReservationView } from '../user/user-reservation-view/user-reservation-view';
 import { BrowseWorkspaces } from '../../browse-workspaces/browse-workspaces';
+import { ManagerReportView } from '../manager/manager-report-view/manager-report-view';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [Profile, ManagerReservationView, ManagerWorkspaceView, ManagerWorkspaceRegistration, UserReservationView, BrowseWorkspaces],
+  imports: [Profile, ManagerReservationView, ManagerWorkspaceView, ManagerWorkspaceRegistration, UserReservationView, BrowseWorkspaces, ManagerReportView],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
@@ -23,14 +24,20 @@ export class Dashboard implements OnInit {
 
   async ngOnInit() {
     const user = await this.authService.getUser();
-    if (user) {
+    const storedTab = localStorage.getItem('selectedTab');
+    if (user) 
+    {
       this.isManager = user.role === 'manager';
       if (user.role === 'admin')
         this.router.navigate(['admin-dashboard']);
+      if (storedTab) 
+        this.selectedTab = storedTab;
     }
   }
 
-  selectTab(tab: string) {
+  selectTab(tab: string) 
+  {
     this.selectedTab = tab;
+    localStorage.setItem('selectedTab', tab);
   }
 }

@@ -37,6 +37,7 @@
     <app-reservation-view
       [filterWorkspaceKey]="selectedWorkspaceKey"
       [filterElementKey]="selectedElementKey"
+      (reservationStatusChanged)="onReservationStatusChanged()"
     ></app-reservation-view>
   </div>
 </div>
